@@ -1,0 +1,8 @@
+payload:
+  - "localhost"
+  - "*.local"
+  - "*.lan"
+  - "*.home.arpa"
+  - ".cn"
+  - ".中国"
+  - ".中國"
