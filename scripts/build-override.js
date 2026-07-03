@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -32,6 +32,34 @@ function expandPayloadFrom(source) {
   });
 }
 
+function ruleProviderBlocks(output) {
+  const providersSection = output.match(/^rule-providers:\n([\s\S]*?)^rules:/mu)?.[1] ?? "";
+  const blocks = new Map();
+  let currentProvider = null;
+  let currentBlock = [];
+
+  for (const line of providersSection.split("\n")) {
+    const providerMatch = line.match(/^  ([^:\n]+):$/u);
+    if (providerMatch) {
+      if (currentProvider) {
+        blocks.set(currentProvider, `${currentBlock.join("\n")}\n`);
+      }
+      currentProvider = providerMatch[1];
+      currentBlock = [];
+      continue;
+    }
+    if (currentProvider) {
+      currentBlock.push(line);
+    }
+  }
+
+  if (currentProvider) {
+    blocks.set(currentProvider, `${currentBlock.join("\n")}\n`);
+  }
+
+  return blocks;
+}
+
 function validateModules() {
   const seenTopLevelKeys = new Map();
   for (const file of moduleFiles) {
@@ -50,12 +78,9 @@ function validateModules() {
 
 function validateReferences(output) {
   const requiredRuleProviders = new Set();
-  const availableRuleProviders = new Set();
+  const providerBlocks = ruleProviderBlocks(output);
+  const availableRuleProviders = new Set(providerBlocks.keys());
   const availableGroups = new Set(["DIRECT", "REJECT", "REJECT-DROP", "PASS", "COMPATIBLE"]);
-
-  for (const match of output.matchAll(/^  ([A-Za-z0-9_-]+):\n    type:/gmu)) {
-    availableRuleProviders.add(match[1]);
-  }
 
   for (const match of output.matchAll(/^  - name: ([^\n]+)/gmu)) {
     availableGroups.add(match[1].trim().replace(/^["']|["']$/gu, ""));
@@ -70,6 +95,9 @@ function validateReferences(output) {
         throw new Error(`Rule references unknown outbound group: ${rule}`);
       }
     }
+    if (type === "GEOIP" && !availableGroups.has(outbound)) {
+      throw new Error(`GEOIP references unknown outbound group: ${rule}`);
+    }
     if (type === "MATCH" && !availableGroups.has(provider)) {
       throw new Error(`MATCH references unknown outbound group: ${rule}`);
     }
@@ -78,6 +106,18 @@ function validateReferences(output) {
   for (const provider of requiredRuleProviders) {
     if (!availableRuleProviders.has(provider)) {
       throw new Error(`Rule references missing rule-provider: ${provider}`);
+    }
+  }
+
+  const requiredHttpFields = ["type", "behavior", "format", "path", "url", "interval"];
+  for (const [provider, block] of providerBlocks) {
+    if (!/^    type: http$/mu.test(block)) {
+      continue;
+    }
+    for (const field of requiredHttpFields) {
+      if (!new RegExp(`^    ${field}:`, "mu").test(block)) {
+        throw new Error(`HTTP rule-provider "${provider}" is missing required field: ${field}`);
+      }
     }
   }
 }
@@ -98,7 +138,10 @@ const output = build();
 writeFileSync(resolve(root, outputFile), output);
 
 if (process.argv.includes("--check")) {
-  for (const file of [...moduleFiles, "rules/ai.yaml", "rules/direct.yaml"]) {
+  const ruleFiles = readdirSync(resolve(root, "rules"))
+    .filter((file) => file.endsWith(".yaml"))
+    .map((file) => `rules/${file}`);
+  for (const file of [...moduleFiles, ...ruleFiles]) {
     const source = readText(file);
     if (source.includes("\t")) {
       throw new Error(`${file} contains tabs; use spaces for YAML indentation`);

@@ -41,6 +41,102 @@ rule-providers:
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
     path-in-bundle: geo/geosite/category-ads-all.mrs
     interval: 86400
+  category-ai-!cn:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/category-ai-!cn.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs
+    path-in-bundle: geo/geosite/category-ai-!cn.mrs
+    interval: 86400
+  openai:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/openai.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/openai.mrs
+    path-in-bundle: geo/geosite/openai.mrs
+    interval: 86400
+  youtube:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/youtube.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs
+    path-in-bundle: geo/geosite/youtube.mrs
+    interval: 86400
+  google:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/google.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.mrs
+    path-in-bundle: geo/geosite/google.mrs
+    interval: 86400
+  google-ip:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    path: ./ruleset/google-ip.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs
+    path-in-bundle: geo/geoip/google.mrs
+    interval: 86400
+  telegram:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/telegram.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs
+    path-in-bundle: geo/geosite/telegram.mrs
+    interval: 86400
+  telegram-ip:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    path: ./ruleset/telegram-ip.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs
+    path-in-bundle: geo/geoip/telegram.mrs
+    interval: 86400
+  github:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/github.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/github.mrs
+    path-in-bundle: geo/geosite/github.mrs
+    interval: 86400
+  gitlab:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/gitlab.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/gitlab.mrs
+    path-in-bundle: geo/geosite/gitlab.mrs
+    interval: 86400
+  geolocation-cn:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/geolocation-cn.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-cn.mrs
+    path-in-bundle: geo/geosite/geolocation-cn.mrs
+    interval: 86400
+  geolocation-!cn:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/geolocation-!cn.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs
+    path-in-bundle: geo/geosite/geolocation-!cn.mrs
+    interval: 86400
+  private:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    path: ./ruleset/private.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs
+    path-in-bundle: geo/geoip/private.mrs
+    interval: 86400
   cn-domain:
     type: http
     behavior: domain

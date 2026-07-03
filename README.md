@@ -5,6 +5,8 @@ Modular Mihomo override rules for Sparkle. This repository keeps routing and DNS
 ## What This Includes
 
 - AI routing for OpenAI, ChatGPT, Claude, Gemini, Perplexity, Poe, and Copilot.
+- Service routing for YouTube, Google, Telegram, GitHub, GitLab, domestic, non-China, and private traffic.
+- Automatic node testing with the `Auto` strategy group.
 - Ad blocking with MetaCubeX `category-ads-all` MRS rules.
 - Domestic domain and IP routing with MetaCubeX China geosite/geoip rule sets.
 - DNS leak reduction with `fake-ip`, domestic DoH for China rules, and Cloudflare DoH for proxied domains.
@@ -51,7 +53,12 @@ https://raw.githubusercontent.com/<your-user>/<your-repo>/main/mihomo-override.y
 ## Verification
 
 - AI: `chatgpt.com`, `claude.ai`, and `gemini.google.com` should match `AI`.
-- Domestic direct: common China sites such as `baidu.com`, `qq.com`, and `taobao.com`, plus `dogni.work`, should match `DIRECT`.
+- YouTube: `youtube.com` should match `YouTube`.
+- Google: `google.com` should match `Google`.
+- Telegram: `telegram.org` should match `Telegram`.
+- GitHub and GitLab: `github.com` and `gitlab.com` should match `GitHub`.
+- Domestic direct: common China sites such as `baidu.com`, `qq.com`, and `taobao.com` should match `Domestic`; `dogni.work` should match `DIRECT`.
+- Non-China: geolocation non-China domains should match `NonChina`.
 - Ads: domains from MetaCubeX `category-ads-all` should match `AdBlock`.
 - DNS: foreign DNS leak tests should not show your local ISP DNS. Domestic domains may resolve through AliDNS or DNSPod DoH.
 

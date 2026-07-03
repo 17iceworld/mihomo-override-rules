@@ -51,7 +51,34 @@ dns:
     "rule-set:cn-domain":
       - https://dns.alidns.com/dns-query
       - https://doh.pub/dns-query
+    "rule-set:geolocation-cn":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
     "rule-set:ai-domain":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:category-ai-!cn":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:openai":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:youtube":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:google":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:telegram":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:github":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:gitlab":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:geolocation-!cn":
       - https://cloudflare-dns.com/dns-query
       - https://1.1.1.1/dns-query
   fallback-filter:

@@ -1,8 +1,16 @@
 proxy-groups:
+  - name: Auto
+    type: url-test
+    include-all: true
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    timeout: 5000
+    lazy: true
   - name: PROXY
     type: select
     include-all: true
     proxies:
+      - Auto
       - DIRECT
     url: https://www.gstatic.com/generate_204
     interval: 300
@@ -12,6 +20,7 @@ proxy-groups:
     type: select
     proxies:
       - PROXY
+      - Auto
       - DIRECT
     include-all: true
     url: https://www.gstatic.com/generate_204
@@ -23,8 +32,51 @@ proxy-groups:
     proxies:
       - REJECT
       - DIRECT
+  - name: YouTube
+    type: select
+    proxies:
+      - PROXY
+      - Auto
+      - DIRECT
+  - name: Google
+    type: select
+    proxies:
+      - PROXY
+      - Auto
+      - DIRECT
+  - name: Telegram
+    type: select
+    proxies:
+      - PROXY
+      - Auto
+      - DIRECT
+  - name: GitHub
+    type: select
+    proxies:
+      - PROXY
+      - Auto
+      - DIRECT
+  - name: NonChina
+    type: select
+    proxies:
+      - PROXY
+      - Auto
+      - DIRECT
+  - name: Private
+    type: select
+    proxies:
+      - DIRECT
+      - PROXY
+      - Auto
+  - name: Domestic
+    type: select
+    proxies:
+      - DIRECT
+      - PROXY
+      - Auto
   - name: Final
     type: select
     proxies:
       - PROXY
+      - Auto
       - DIRECT
