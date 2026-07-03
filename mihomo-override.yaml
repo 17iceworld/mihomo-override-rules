@@ -100,7 +100,7 @@ dns:
 proxy-groups:
   - name: "[AUTO] Auto"
     type: url-test
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/auto.png
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/auto.png?v=d670e50
     include-all: true
     url: https://www.gstatic.com/generate_204
     interval: 300
@@ -108,7 +108,7 @@ proxy-groups:
     lazy: true
   - name: "[PROXY] PROXY"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/proxy.png
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/proxy.png?v=d670e50
     include-all: true
     proxies:
       - "[AUTO] Auto"
@@ -119,7 +119,7 @@ proxy-groups:
     lazy: true
   - name: "[AI] AI"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/ai.png
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/ai.png?v=d670e50
     proxies:
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
@@ -131,62 +131,62 @@ proxy-groups:
     lazy: true
   - name: "[AD] AdBlock"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/adblock.png
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/adblock.png?v=d670e50
     proxies:
       - REJECT
       - DIRECT
   - name: "[YT] YouTube"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/youtube.png
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/youtube.png?v=d670e50
     proxies:
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
       - DIRECT
   - name: "[G] Google"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/google.png
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/google.png?v=d670e50
     proxies:
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
       - DIRECT
   - name: "[TG] Telegram"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/telegram.png
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/telegram.png?v=d670e50
     proxies:
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
       - DIRECT
   - name: "[GH] GitHub"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/github.png
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/github.png?v=d670e50
     proxies:
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
       - DIRECT
   - name: "[GLOBAL] NonChina"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/nonchina.png
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/nonchina.png?v=d670e50
     proxies:
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
       - DIRECT
   - name: "[LAN] Private"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/private.png
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/private.png?v=d670e50
     proxies:
       - DIRECT
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
   - name: "[CN] Domestic"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/domestic.png
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/domestic.png?v=d670e50
     proxies:
       - DIRECT
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
   - name: "[FINAL] Final"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/final.png
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/final.png?v=d670e50
     proxies:
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
