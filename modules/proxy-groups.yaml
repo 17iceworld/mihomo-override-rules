@@ -1,82 +1,82 @@
 proxy-groups:
-  - name: Auto
+  - name: ♻️ Auto
     type: url-test
     include-all: true
     url: https://www.gstatic.com/generate_204
     interval: 300
     timeout: 5000
     lazy: true
-  - name: PROXY
+  - name: 🚀 PROXY
     type: select
     include-all: true
     proxies:
-      - Auto
+      - ♻️ Auto
       - DIRECT
     url: https://www.gstatic.com/generate_204
     interval: 300
     timeout: 5000
     lazy: true
-  - name: AI
+  - name: 🤖 AI
     type: select
     proxies:
-      - PROXY
-      - Auto
+      - 🚀 PROXY
+      - ♻️ Auto
       - DIRECT
     include-all: true
     url: https://www.gstatic.com/generate_204
     interval: 300
     timeout: 5000
     lazy: true
-  - name: AdBlock
+  - name: 🛡️ AdBlock
     type: select
     proxies:
       - REJECT
       - DIRECT
-  - name: YouTube
+  - name: ▶️ YouTube
     type: select
     proxies:
-      - PROXY
-      - Auto
+      - 🚀 PROXY
+      - ♻️ Auto
       - DIRECT
-  - name: Google
+  - name: 🔎 Google
     type: select
     proxies:
-      - PROXY
-      - Auto
+      - 🚀 PROXY
+      - ♻️ Auto
       - DIRECT
-  - name: Telegram
+  - name: ✈️ Telegram
     type: select
     proxies:
-      - PROXY
-      - Auto
+      - 🚀 PROXY
+      - ♻️ Auto
       - DIRECT
-  - name: GitHub
+  - name: 🐙 GitHub
     type: select
     proxies:
-      - PROXY
-      - Auto
+      - 🚀 PROXY
+      - ♻️ Auto
       - DIRECT
-  - name: NonChina
+  - name: 🌐 NonChina
     type: select
     proxies:
-      - PROXY
-      - Auto
+      - 🚀 PROXY
+      - ♻️ Auto
       - DIRECT
-  - name: Private
-    type: select
-    proxies:
-      - DIRECT
-      - PROXY
-      - Auto
-  - name: Domestic
+  - name: 🏠 Private
     type: select
     proxies:
       - DIRECT
-      - PROXY
-      - Auto
-  - name: Final
+      - 🚀 PROXY
+      - ♻️ Auto
+  - name: 🇨🇳 Domestic
     type: select
     proxies:
-      - PROXY
-      - Auto
+      - DIRECT
+      - 🚀 PROXY
+      - ♻️ Auto
+  - name: 🐟 Final
+    type: select
+    proxies:
+      - 🚀 PROXY
+      - ♻️ Auto
       - DIRECT
