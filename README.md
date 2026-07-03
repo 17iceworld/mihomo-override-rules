@@ -5,7 +5,8 @@ Modular Mihomo override rules for Sparkle. This repository keeps routing and DNS
 ## What This Includes
 
 - AI routing for OpenAI, ChatGPT, Claude, Gemini, Perplexity, Poe, and Copilot.
-- Lightweight ad blocking with ACL4SSR `BanAD.list`.
+- Ad blocking with MetaCubeX `category-ads-all` MRS rules.
+- Domestic domain and IP routing with MetaCubeX China geosite/geoip rule sets.
 - DNS leak reduction with `fake-ip`, domestic DoH for China rules, and Cloudflare DoH for proxied domains.
 - A generated `mihomo-override.yaml` for direct import or remote override use.
 
@@ -21,7 +22,6 @@ Modular Mihomo override rules for Sparkle. This repository keeps routing and DNS
 │   └── rules.yaml
 ├── rules/
 │   ├── ai.yaml
-│   ├── ads.yaml
 │   └── direct.yaml
 └── scripts/
     └── build-override.js
@@ -51,8 +51,8 @@ https://raw.githubusercontent.com/<your-user>/<your-repo>/main/mihomo-override.y
 ## Verification
 
 - AI: `chatgpt.com`, `claude.ai`, and `gemini.google.com` should match `AI`.
-- Domestic direct: common China sites should match `DIRECT`.
-- Ads: domains from ACL4SSR `BanAD.list` should match `AdBlock`.
+- Domestic direct: common China sites such as `baidu.com`, `qq.com`, and `taobao.com`, plus `dogni.work`, should match `DIRECT`.
+- Ads: domains from MetaCubeX `category-ads-all` should match `AdBlock`.
 - DNS: foreign DNS leak tests should not show your local ISP DNS. Domestic domains may resolve through AliDNS or DNSPod DoH.
 
 ## Security Rules
@@ -64,12 +64,12 @@ Never commit:
 - UUIDs, passwords, private keys, tokens, or cookies
 - Home IPs, personal domains, or internal network details
 
-## Optional Stronger Ad Blocking
+## Ad Blocking
 
-The default ad provider is intentionally conservative:
+Ad blocking uses the remote MetaCubeX `category-ads-all` MRS provider:
 
-```text
-https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanAD.list
+```yaml
+RULE-SET,category-ads-all,AdBlock
 ```
 
-If you need stronger blocking, consider adding a separate optional provider such as blackmatrix7 `Advertising.yaml`, then route it to `AdBlock`. Do not enable large rulesets by default until you have tested app compatibility.
+If a site or app breaks because of overblocking, switch the `AdBlock` group to `DIRECT` temporarily or add a narrower allow/direct rule before the ad rule.

@@ -33,17 +33,14 @@ rule-providers:
     type: inline
     behavior: domain
     payload-from: rules/ai.yaml
-  ads-lite:
+  category-ads-all:
     type: http
-    behavior: classical
-    format: text
-    path: ./ruleset/ads-lite.list
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanAD.list
+    behavior: domain
+    format: mrs
+    path: ./ruleset/category-ads-all.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
+    path-in-bundle: geo/geosite/category-ads-all.mrs
     interval: 86400
-  ads-custom:
-    type: inline
-    behavior: classical
-    payload-from: rules/ads.yaml
   cn-domain:
     type: http
     behavior: domain

@@ -1,10 +1,10 @@
 rules:
   - RULE-SET,private-domain,DIRECT
   - RULE-SET,private-ip,DIRECT,no-resolve
-  - RULE-SET,ads-custom,AdBlock
-  - RULE-SET,ads-lite,AdBlock
+  - RULE-SET,category-ads-all,AdBlock
   - RULE-SET,ai-domain,AI
   - RULE-SET,direct-domain,DIRECT
   - RULE-SET,cn-domain,DIRECT
   - RULE-SET,cn-ip,DIRECT,no-resolve
+  - GEOIP,CN,DIRECT,no-resolve
   - MATCH,Final

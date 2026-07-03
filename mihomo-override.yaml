@@ -139,6 +139,7 @@ rule-providers:
       - ".cn"
       - ".中国"
       - ".中國"
+      - ".dogni.work"
   ai-domain:
     type: inline
     behavior: domain
@@ -159,28 +160,14 @@ rule-providers:
       - "copilot.microsoft.com"
       - ".githubcopilot.com"
       - ".githubnext.com"
-  ads-lite:
+  category-ads-all:
     type: http
-    behavior: classical
-    format: text
-    path: ./ruleset/ads-lite.list
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanAD.list
+    behavior: domain
+    format: mrs
+    path: ./ruleset/category-ads-all.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
+    path-in-bundle: geo/geosite/category-ads-all.mrs
     interval: 86400
-  ads-custom:
-    type: inline
-    behavior: classical
-    payload:
-      - DOMAIN-SUFFIX,adservice.google.com
-      - DOMAIN-SUFFIX,ads.google.com
-      - DOMAIN-SUFFIX,doubleclick.net
-      - DOMAIN-SUFFIX,googlesyndication.com
-      - DOMAIN-SUFFIX,googleadservices.com
-      - DOMAIN-SUFFIX,google-analytics.com
-      - DOMAIN-SUFFIX,analytics.google.com
-      - DOMAIN-SUFFIX,umeng.com
-      - DOMAIN-SUFFIX,umengcloud.com
-      - DOMAIN-SUFFIX,cnzz.com
-      - DOMAIN-SUFFIX,hm.baidu.com
   cn-domain:
     type: http
     behavior: domain
@@ -201,10 +188,10 @@ rule-providers:
 rules:
   - RULE-SET,private-domain,DIRECT
   - RULE-SET,private-ip,DIRECT,no-resolve
-  - RULE-SET,ads-custom,AdBlock
-  - RULE-SET,ads-lite,AdBlock
+  - RULE-SET,category-ads-all,AdBlock
   - RULE-SET,ai-domain,AI
   - RULE-SET,direct-domain,DIRECT
   - RULE-SET,cn-domain,DIRECT
   - RULE-SET,cn-ip,DIRECT,no-resolve
+  - GEOIP,CN,DIRECT,no-resolve
   - MATCH,Final

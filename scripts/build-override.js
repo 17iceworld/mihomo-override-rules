@@ -98,7 +98,7 @@ const output = build();
 writeFileSync(resolve(root, outputFile), output);
 
 if (process.argv.includes("--check")) {
-  for (const file of [...moduleFiles, "rules/ai.yaml", "rules/ads.yaml", "rules/direct.yaml"]) {
+  for (const file of [...moduleFiles, "rules/ai.yaml", "rules/direct.yaml"]) {
     const source = readText(file);
     if (source.includes("\t")) {
       throw new Error(`${file} contains tabs; use spaces for YAML indentation`);
