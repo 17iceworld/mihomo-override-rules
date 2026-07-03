@@ -6,10 +6,11 @@ Modular Mihomo override rules for Sparkle. This repository keeps routing and DNS
 
 - AI routing for OpenAI, ChatGPT, Claude, Gemini, Perplexity, Poe, and Copilot.
 - Service routing for YouTube, Google, Telegram, GitHub, GitLab, domestic, non-China, and private traffic.
-- Icon-labeled strategy groups such as `🚀 PROXY`, `♻️ Auto`, and `🤖 AI`.
+- ASCII tag-labeled strategy groups such as `[PROXY] PROXY`, `[AUTO] Auto`, and `[AI] AI`.
 - Ad blocking with MetaCubeX `category-ads-all` MRS rules.
 - Domestic domain and IP routing with MetaCubeX China geosite/geoip rule sets.
 - DNS leak reduction with `fake-ip`, domestic DoH for China rules, and Cloudflare DoH for proxied domains.
+- Flat PNG proxy group icons served from the repository through GitHub raw URLs.
 - A generated `mihomo-override.yaml` for direct import or remote override use.
 
 ## Repository Layout
@@ -17,6 +18,7 @@ Modular Mihomo override rules for Sparkle. This repository keeps routing and DNS
 ```text
 .
 ├── mihomo-override.yaml
+├── icons/
 ├── modules/
 │   ├── dns.yaml
 │   ├── proxy-groups.yaml
@@ -52,14 +54,14 @@ https://raw.githubusercontent.com/<your-user>/<your-repo>/main/mihomo-override.y
 
 ## Verification
 
-- AI: `chatgpt.com`, `claude.ai`, and `gemini.google.com` should match `🤖 AI`.
-- YouTube: `youtube.com` should match `▶️ YouTube`.
-- Google: `google.com` should match `🔎 Google`.
-- Telegram: `telegram.org` should match `✈️ Telegram`.
-- GitHub and GitLab: `github.com` and `gitlab.com` should match `🐙 GitHub`.
-- Domestic direct: common China sites such as `baidu.com`, `qq.com`, and `taobao.com` should match `🇨🇳 Domestic`; `dogni.work` should match `DIRECT`.
-- Non-China: geolocation non-China domains should match `🌐 NonChina`.
-- Ads: domains from MetaCubeX `category-ads-all` should match `🛡️ AdBlock`.
+- AI: `chatgpt.com`, `claude.ai`, and `gemini.google.com` should match `[AI] AI`.
+- YouTube: `youtube.com` should match `[YT] YouTube`.
+- Google: `google.com` should match `[G] Google`.
+- Telegram: `telegram.org` should match `[TG] Telegram`.
+- GitHub and GitLab: `github.com` and `gitlab.com` should match `[GH] GitHub`.
+- Domestic direct: common China sites such as `baidu.com`, `qq.com`, and `taobao.com` should match `[CN] Domestic`; `dogni.work` should match `DIRECT`.
+- Non-China: geolocation non-China domains should match `[GLOBAL] NonChina`.
+- Ads: domains from MetaCubeX `category-ads-all` should match `[AD] AdBlock`.
 - DNS: foreign DNS leak tests should not show your local ISP DNS. Domestic domains may resolve through AliDNS or DNSPod DoH.
 
 ## Security Rules
@@ -76,7 +78,7 @@ Never commit:
 Ad blocking uses the remote MetaCubeX `category-ads-all` MRS provider:
 
 ```yaml
-RULE-SET,category-ads-all,🛡️ AdBlock
+RULE-SET,category-ads-all,[AD] AdBlock
 ```
 
-If a site or app breaks because of overblocking, switch the `🛡️ AdBlock` group to `DIRECT` temporarily or add a narrower allow/direct rule before the ad rule.
+If a site or app breaks because of overblocking, switch the `[AD] AdBlock` group to `DIRECT` temporarily or add a narrower allow/direct rule before the ad rule.
