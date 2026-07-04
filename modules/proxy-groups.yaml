@@ -1,5 +1,5 @@
 proxy-groups:
-  - name: "[AUTO] Auto"
+  - name: "Auto"
     type: url-test
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/auto.png?v=d670e50
     include-all: true
@@ -8,73 +8,73 @@ proxy-groups:
     interval: 300
     timeout: 5000
     lazy: true
-  - name: "[PROXY] PROXY"
+  - name: "PROXY"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/proxy.png?v=d670e50
     include-all: true
     proxies:
-      - "[AUTO] Auto"
+      - "Auto"
       - DIRECT
-  - name: "[AI] AI"
+  - name: "AI"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/ai.png?v=d670e50
     proxies:
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
+      - "PROXY"
+      - "Auto"
     include-all: true
-  - name: "[AD] AdBlock"
+  - name: "AdBlock"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/adblock.png?v=d670e50
     proxies:
       - REJECT
       - DIRECT
-  - name: "[YT] YouTube"
+  - name: "YouTube"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/youtube.png?v=d670e50
     proxies:
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
-  - name: "[G] Google"
+      - "PROXY"
+      - "Auto"
+  - name: "Google"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/google.png?v=d670e50
     proxies:
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
-  - name: "[TG] Telegram"
+      - "PROXY"
+      - "Auto"
+  - name: "Telegram"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/telegram.png?v=d670e50
     proxies:
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
-  - name: "[GH] GitHub"
+      - "PROXY"
+      - "Auto"
+  - name: "GitHub"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/github.png?v=d670e50
     proxies:
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
-  - name: "[GLOBAL] NonChina"
+      - "PROXY"
+      - "Auto"
+  - name: "NonChina"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/nonchina.png?v=d670e50
     proxies:
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
-  - name: "[LAN] Private"
+      - "PROXY"
+      - "Auto"
+  - name: "Private"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/private.png?v=d670e50
     proxies:
       - DIRECT
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
-  - name: "[CN] Domestic"
+      - "PROXY"
+      - "Auto"
+  - name: "Domestic"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/domestic.png?v=d670e50
     proxies:
       - DIRECT
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
-  - name: "[FINAL] Final"
+      - "PROXY"
+      - "Auto"
+  - name: "Final"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/final.png?v=d670e50
     proxies:
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
+      - "PROXY"
+      - "Auto"

@@ -1,24 +1,82 @@
 # Mihomo Override Rules
 
-Modular Mihomo override rules for Sparkle. This repository keeps routing and DNS policy separate from private VPS subscription data.
+Modular Mihomo override rules for Sparkle. This repository keeps routing, DNS policy, icons, and public rule-provider wiring separate from private VPS subscription data.
 
 ## What This Includes
 
-- AI routing for OpenAI, ChatGPT, Claude, Gemini, Perplexity, Poe, and Copilot.
-- Service routing for YouTube, Google, Telegram, GitHub, GitLab, domestic, non-China, and private traffic.
-- ASCII tag-labeled strategy groups such as `[PROXY] PROXY`, `[AUTO] Auto`, and `[AI] AI`.
-- Ad blocking with MetaCubeX `category-ads-all` MRS rules.
-- Domestic domain and IP routing with MetaCubeX China geosite/geoip rule sets.
-- DNS leak reduction with `fake-ip`, domestic DoH for China rules, and Cloudflare DoH for proxied domains.
-- Flat PNG proxy group icons served from the repository through GitHub raw URLs.
-- Generated light and full overrides for direct import or remote override use.
+- Two generated overrides:
+  - `mihomo-override.yaml`: light profile for common AI, Google, YouTube, Telegram, GitHub/GitLab, domestic, non-China, private, ad-block, and final routing.
+  - `mihomo-override_full.yaml`: expanded profile with Apple CN/Global, Microsoft/OneDrive, TikTok, X/Twitter, Instagram, Reddit, Game, and extra AI routing.
+- Clean strategy group names such as `PROXY`, `Auto`, `AI`, `AdBlock`, `Domestic`, and `Final`.
+- PNG proxy group icons from `icons/`, referenced through GitHub raw URLs.
+- Inline custom domain rules under `rules/` for AI, direct CN, direct global, X, Instagram, and Reddit.
+- Remote MetaCubeX MRS rule providers for common services, China geosite/geoip, private IP, ads, and game platforms.
+- DNS policy using `fake-ip`, AliDNS/DNSPod DoH for domestic rules, and Cloudflare DoH for proxied or global rules.
+
+## Profile Differences
+
+### Light
+
+`mihomo-override.yaml` is built from:
+
+- `modules/dns.yaml`
+- `modules/proxy-groups.yaml`
+- `modules/rule-providers.yaml`
+- `modules/rules.yaml`
+
+Light groups:
+
+```text
+Auto, PROXY, AI, AdBlock, YouTube, Google, Telegram, GitHub, NonChina, Private, Domestic, Final
+```
+
+Light routing covers direct/private traffic, custom direct domains, ads, AI, OpenAI, YouTube, Google, Telegram, GitHub/GitLab, China domain/IP, non-China domains, Google IP, Telegram IP, and final fallback.
+
+### Full
+
+`mihomo-override_full.yaml` is built from:
+
+- `modules/full-dns.yaml`
+- `modules/full-proxy-groups.yaml`
+- `modules/full-rule-providers.yaml`
+- `modules/full-rules.yaml`
+
+Full includes every light group plus:
+
+```text
+Apple CN, Apple, Microsoft, TikTok, X, Instagram, Reddit, Game
+```
+
+Full also adds rule providers for `anthropic`, `apple-cn`, `apple`, `microsoft`, `onedrive`, `tiktok`, `twitter`, `instagram`, `reddit`, `category-games`, `steam`, `epicgames`, `xbox`, `playstation`, and `nintendo`.
 
 ## Repository Layout
 
 ```text
 .
+├── README.md
 ├── mihomo-override.yaml
+├── mihomo-override_full.yaml
 ├── icons/
+│   ├── adblock.png
+│   ├── ai.png
+│   ├── apple-cn.png
+│   ├── apple.png
+│   ├── auto.png
+│   ├── domestic.png
+│   ├── final.png
+│   ├── game.png
+│   ├── github.png
+│   ├── google.png
+│   ├── instagram.png
+│   ├── microsoft.png
+│   ├── nonchina.png
+│   ├── private.png
+│   ├── proxy.png
+│   ├── reddit.png
+│   ├── telegram.png
+│   ├── tiktok.png
+│   ├── x.png
+│   └── youtube.png
 ├── modules/
 │   ├── dns.yaml
 │   ├── full-dns.yaml
@@ -30,41 +88,59 @@ Modular Mihomo override rules for Sparkle. This repository keeps routing and DNS
 │   └── rules.yaml
 ├── rules/
 │   ├── ai.yaml
-│   ├── direct.yaml
+│   ├── direct-cn.yaml
+│   ├── direct-global.yaml
 │   ├── instagram.yaml
 │   ├── reddit.yaml
 │   └── x.yaml
+├── scripts/
+│   └── build-override.js
 ├── tests/
 │   └── cases.yaml
-└── scripts/
-    └── build-override.js
+└── package.json
 ```
 
-## Build
+## Build And Test
 
 ```bash
-npm install
 npm run build
 npm test
 ```
 
-`npm run build` merges files from `modules/` in a fixed order and writes:
+`npm run build` merges the configured module files in `scripts/build-override.js`, expands each `payload-from` rule file, proxies remote GitHub rule-provider URLs through `https://gh-proxy.org/`, then writes both generated override files.
 
-- `mihomo-override.yaml`: light override.
-- `mihomo-override_full.yaml`: full override with Apple CN/Global, Microsoft, TikTok, X, Instagram, Reddit, Game, and expanded AI routing.
+`npm test` runs the build in check mode. It validates:
 
-Remote rule-provider URLs are generated through `https://gh-proxy.org/https://raw.githubusercontent.com/...`.
+- no tab indentation in modules, rule files, or test cases
+- no duplicate top-level YAML keys within each generated profile
+- all `RULE-SET`, `GEOIP`, and `MATCH` outbounds reference existing groups
+- all referenced rule providers exist
+- HTTP rule providers include required fields
+- generated rule-provider URLs do not use unproxied raw GitHub URLs
+- DNS `rule-set:` policies reference existing providers
+- cases in `tests/cases.yaml` match rules in the full profile
+
+Generated files start with:
+
+```yaml
+# Generated by scripts/build-override.js.
+# Edit files under modules/ and rules/ instead.
+```
+
+Edit `modules/` and `rules/`, then rebuild.
 
 ## Sparkle Usage
 
 1. Add your VPS subscription in Sparkle.
-2. Add this override file as a remote override:
+2. Add one override as a remote override.
+
+Light:
 
 ```text
 https://raw.githubusercontent.com/<your-user>/<your-repo>/main/mihomo-override.yaml
 ```
 
-Use the full version if you want the expanded service groups:
+Full:
 
 ```text
 https://raw.githubusercontent.com/<your-user>/<your-repo>/main/mihomo-override_full.yaml
@@ -72,38 +148,62 @@ https://raw.githubusercontent.com/<your-user>/<your-repo>/main/mihomo-override_f
 
 3. Apply the profile and check that Mihomo starts without provider or strategy group errors.
 
-## Verification
+## Verification Cases
 
-- AI: `chatgpt.com`, `claude.ai`, and `gemini.google.com` should match `[AI] AI`.
-- YouTube: `youtube.com` should match `[YT] YouTube`.
-- Google: `google.com` should match `[G] Google`.
-- Telegram: `telegram.org` should match `[TG] Telegram`.
-- GitHub and GitLab: `github.com` and `gitlab.com` should match `[GH] GitHub`.
-- Apple China: `apple.com.cn` should match `[APPLE-CN] Apple CN` in the full override.
-- Apple global: `icloud.com` should match `[APPLE] Apple` in the full override.
-- Microsoft: `microsoft.com` should match `[MS] Microsoft` in the full override.
-- TikTok, X, Instagram, and Reddit should match their dedicated full override groups.
-- Game: `store.steampowered.com` should match `[GAME] Game` in the full override.
-- Domestic direct: common China sites such as `baidu.com`, `qq.com`, and `taobao.com` should match `[CN] Domestic`; `dogni.work` should match `DIRECT`.
-- Non-China: geolocation non-China domains should match `[GLOBAL] NonChina`.
-- Ads: domains from MetaCubeX `category-ads-all` should match `[AD] AdBlock`.
-- DNS: foreign DNS leak tests should not show your local ISP DNS. Domestic domains may resolve through AliDNS or DNSPod DoH.
+The checked cases live in `tests/cases.yaml` and target the full profile:
 
-## Security Rules
+- `chatgpt.com` and `cursor.com` -> `AI`
+- `apple.com.cn` -> `Apple CN`
+- `icloud.com` -> `Apple`
+- `microsoft.com` -> `Microsoft`
+- `tiktok.com` -> `TikTok`
+- `x.com` -> `X`
+- `instagram.com` -> `Instagram`
+- `reddit.com` -> `Reddit`
+- `store.steampowered.com` -> `Game`
+- `baidu.com` -> `Domestic`
+- `dogni.work` -> `DIRECT`
+- `example.cn` -> `DIRECT`
 
-Never commit:
+Additional manual checks:
 
-- VPS subscription URLs
-- Proxy server addresses intended to stay private
-- UUIDs, passwords, private keys, tokens, or cookies
-- Home IPs, personal domains, or internal network details
+- `youtube.com` -> `YouTube`
+- `google.com` -> `Google`
+- `telegram.org` -> `Telegram`
+- `github.com` and `gitlab.com` -> `GitHub`
+- geolocation non-China domains -> `NonChina`
+- domains from MetaCubeX `category-ads-all` -> `AdBlock`
+- foreign DNS leak tests should not show the local ISP DNS; domestic domains may resolve through AliDNS or DNSPod DoH
+
+## Rule Order
+
+Routing is intentionally ordered from specific to broad:
+
+1. private and direct custom rules
+2. ad blocking
+3. service-specific rules
+4. China domain/IP rules
+5. non-China domain rules
+6. Google and Telegram IP rules
+7. final fallback
+
+Put allow/direct exceptions before broad remote rule providers if a site is overmatched.
 
 ## Ad Blocking
 
 Ad blocking uses the remote MetaCubeX `category-ads-all` MRS provider:
 
 ```yaml
-RULE-SET,category-ads-all,[AD] AdBlock
+RULE-SET,category-ads-all,AdBlock
 ```
 
-If a site or app breaks because of overblocking, switch the `[AD] AdBlock` group to `DIRECT` temporarily or add a narrower allow/direct rule before the ad rule.
+If a site or app breaks because of overblocking, switch the `AdBlock` group to `DIRECT` temporarily or add a narrower allow/direct rule before the ad rule.
+
+## Security Rules
+
+Never commit:
+
+- VPS subscription URLs
+- proxy server addresses intended to stay private
+- UUIDs, passwords, private keys, tokens, or cookies
+- home IPs, personal domains that should stay private, or internal network details

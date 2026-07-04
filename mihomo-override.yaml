@@ -101,7 +101,7 @@ dns:
       - "+.twitter.com"
 
 proxy-groups:
-  - name: "[AUTO] Auto"
+  - name: "Auto"
     type: url-test
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/auto.png?v=d670e50
     include-all: true
@@ -110,76 +110,76 @@ proxy-groups:
     interval: 300
     timeout: 5000
     lazy: true
-  - name: "[PROXY] PROXY"
+  - name: "PROXY"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/proxy.png?v=d670e50
     include-all: true
     proxies:
-      - "[AUTO] Auto"
+      - "Auto"
       - DIRECT
-  - name: "[AI] AI"
+  - name: "AI"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/ai.png?v=d670e50
     proxies:
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
+      - "PROXY"
+      - "Auto"
     include-all: true
-  - name: "[AD] AdBlock"
+  - name: "AdBlock"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/adblock.png?v=d670e50
     proxies:
       - REJECT
       - DIRECT
-  - name: "[YT] YouTube"
+  - name: "YouTube"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/youtube.png?v=d670e50
     proxies:
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
-  - name: "[G] Google"
+      - "PROXY"
+      - "Auto"
+  - name: "Google"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/google.png?v=d670e50
     proxies:
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
-  - name: "[TG] Telegram"
+      - "PROXY"
+      - "Auto"
+  - name: "Telegram"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/telegram.png?v=d670e50
     proxies:
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
-  - name: "[GH] GitHub"
+      - "PROXY"
+      - "Auto"
+  - name: "GitHub"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/github.png?v=d670e50
     proxies:
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
-  - name: "[GLOBAL] NonChina"
+      - "PROXY"
+      - "Auto"
+  - name: "NonChina"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/nonchina.png?v=d670e50
     proxies:
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
-  - name: "[LAN] Private"
+      - "PROXY"
+      - "Auto"
+  - name: "Private"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/private.png?v=d670e50
     proxies:
       - DIRECT
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
-  - name: "[CN] Domestic"
+      - "PROXY"
+      - "Auto"
+  - name: "Domestic"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/domestic.png?v=d670e50
     proxies:
       - DIRECT
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
-  - name: "[FINAL] Final"
+      - "PROXY"
+      - "Auto"
+  - name: "Final"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/final.png?v=d670e50
     proxies:
-      - "[PROXY] PROXY"
-      - "[AUTO] Auto"
+      - "PROXY"
+      - "Auto"
 
 rule-providers:
   private-domain:
@@ -375,23 +375,23 @@ rule-providers:
 rules:
   - RULE-SET,private-domain,DIRECT
   - RULE-SET,private-ip,DIRECT,no-resolve
-  - RULE-SET,private,[LAN] Private,no-resolve
+  - RULE-SET,private,Private,no-resolve
   - RULE-SET,direct-global-domain,DIRECT
   - RULE-SET,direct-cn-domain,DIRECT
-  - RULE-SET,category-ads-all,[AD] AdBlock
-  - RULE-SET,ai-domain,[AI] AI
-  - RULE-SET,category-ai-!cn,[AI] AI
-  - RULE-SET,openai,[AI] AI
-  - RULE-SET,youtube,[YT] YouTube
-  - RULE-SET,google,[G] Google
-  - RULE-SET,telegram,[TG] Telegram
-  - RULE-SET,github,[GH] GitHub
-  - RULE-SET,gitlab,[GH] GitHub
-  - RULE-SET,geolocation-cn,[CN] Domestic
-  - RULE-SET,cn-domain,[CN] Domestic
-  - RULE-SET,cn-ip,[CN] Domestic,no-resolve
-  - GEOIP,CN,[CN] Domestic,no-resolve
-  - RULE-SET,geolocation-!cn,[GLOBAL] NonChina
-  - RULE-SET,google-ip,[G] Google,no-resolve
-  - RULE-SET,telegram-ip,[TG] Telegram,no-resolve
-  - MATCH,[FINAL] Final
+  - RULE-SET,category-ads-all,AdBlock
+  - RULE-SET,ai-domain,AI
+  - RULE-SET,category-ai-!cn,AI
+  - RULE-SET,openai,AI
+  - RULE-SET,youtube,YouTube
+  - RULE-SET,google,Google
+  - RULE-SET,telegram,Telegram
+  - RULE-SET,github,GitHub
+  - RULE-SET,gitlab,GitHub
+  - RULE-SET,geolocation-cn,Domestic
+  - RULE-SET,cn-domain,Domestic
+  - RULE-SET,cn-ip,Domestic,no-resolve
+  - GEOIP,CN,Domestic,no-resolve
+  - RULE-SET,geolocation-!cn,NonChina
+  - RULE-SET,google-ip,Google,no-resolve
+  - RULE-SET,telegram-ip,Telegram,no-resolve
+  - MATCH,Final
