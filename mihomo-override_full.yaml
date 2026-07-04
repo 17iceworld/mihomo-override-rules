@@ -201,10 +201,6 @@ proxy-groups:
     proxies:
       - "[AUTO] Auto"
       - DIRECT
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    timeout: 5000
-    lazy: true
   - name: "[AI] AI"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/ai.png?v=d670e50
@@ -213,10 +209,6 @@ proxy-groups:
       - "[AUTO] Auto"
       - DIRECT
     include-all: true
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    timeout: 5000
-    lazy: true
   - name: "[AD] AdBlock"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/adblock.png?v=d670e50
