@@ -1,0 +1,184 @@
+ipv6: true
+mode: rule
+profile:
+  store-selected: true
+  store-fake-ip: true
+dns:
+  enable: true
+  cache-algorithm: arc
+  prefer-h3: false
+  use-hosts: true
+  use-system-hosts: true
+  respect-rules: true
+  listen: 0.0.0.0:1053
+  ipv6: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter-mode: blacklist
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - "*.localhost"
+    - "*.home.arpa"
+    - "localhost.ptlogin2.qq.com"
+    - "+.msftconnecttest.com"
+    - "+.msftncsi.com"
+    - "+.stun.*.*"
+    - "+.stun.*.*.*"
+    - "+.ntp.org"
+    - "+.pool.ntp.org"
+    - "time.*.com"
+    - "time.*.gov"
+    - "time.*.edu.cn"
+    - "time.apple.com"
+    - "time.asia.apple.com"
+    - "+.push.apple.com"
+    - "+.push-apple.com.akadns.net"
+    - "+.itunes.apple.com"
+    - "+.mzstatic.com"
+    - "+.cdn-apple.com"
+    - "+.apple-dns.net"
+    - "+.windowsupdate.com"
+    - "+.update.microsoft.com"
+    - "+.dl.delivery.mp.microsoft.com"
+    - "+.delivery.mp.microsoft.com"
+    - "+.xboxlive.com"
+    - "+.xboxservices.com"
+    - "+.playstation.net"
+    - "+.playstationnetwork.com"
+    - "+.nintendo.net"
+    - "+.nintendo.com"
+    - "+.steampowered.com"
+    - "+.steamcontent.com"
+    - "+.steamserver.net"
+    - "+.epicgames.com"
+    - "+.bank"
+    - "+.cmbchina.com"
+    - "+.95516.com"
+    - "+.unionpay.com"
+    - "+.alipay.com"
+    - "+.tenpay.com"
+    - "+.weixin.qq.com"
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  proxy-server-nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  direct-nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  direct-nameserver-follow-policy: true
+  nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  fallback:
+    - https://cloudflare-dns.com/dns-query
+    - https://1.1.1.1/dns-query
+  nameserver-policy:
+    "rule-set:private-domain":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+    "rule-set:direct-domain":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+    "rule-set:cn-domain":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+    "rule-set:geolocation-cn":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+    "rule-set:apple-cn":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+    "rule-set:microsoft":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+    "rule-set:onedrive":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+    "rule-set:ai-domain":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:category-ai-!cn":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:openai":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:anthropic":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:apple":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:youtube":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:google":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:telegram":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:github":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:gitlab":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:tiktok":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:x-domain":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:twitter":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:instagram-domain":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:instagram":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:reddit-domain":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:reddit":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:category-games":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:steam":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:epicgames":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:xbox":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:playstation":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:nintendo":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:geolocation-!cn":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    geosite:
+      - gfw
+    ipcidr:
+      - 240.0.0.0/4
+    domain:
+      - "+.google.com"
+      - "+.facebook.com"
+      - "+.youtube.com"
+      - "+.x.com"
+      - "+.twitter.com"

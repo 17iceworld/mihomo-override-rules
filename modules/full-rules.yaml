@@ -1,0 +1,40 @@
+rules:
+  - RULE-SET,private-domain,DIRECT
+  - RULE-SET,private-ip,DIRECT,no-resolve
+  - RULE-SET,private,[LAN] Private,no-resolve
+  - RULE-SET,direct-domain,DIRECT
+  - RULE-SET,category-ads-all,[AD] AdBlock
+  - RULE-SET,ai-domain,[AI] AI
+  - RULE-SET,category-ai-!cn,[AI] AI
+  - RULE-SET,openai,[AI] AI
+  - RULE-SET,anthropic,[AI] AI
+  - RULE-SET,apple-cn,[APPLE-CN] Apple CN
+  - RULE-SET,apple,[APPLE] Apple
+  - RULE-SET,youtube,[YT] YouTube
+  - RULE-SET,google,[G] Google
+  - RULE-SET,telegram,[TG] Telegram
+  - RULE-SET,github,[GH] GitHub
+  - RULE-SET,gitlab,[GH] GitHub
+  - RULE-SET,microsoft,[MS] Microsoft
+  - RULE-SET,onedrive,[MS] Microsoft
+  - RULE-SET,tiktok,[TT] TikTok
+  - RULE-SET,x-domain,[X] X
+  - RULE-SET,twitter,[X] X
+  - RULE-SET,instagram-domain,[IG] Instagram
+  - RULE-SET,instagram,[IG] Instagram
+  - RULE-SET,reddit-domain,[RD] Reddit
+  - RULE-SET,reddit,[RD] Reddit
+  - RULE-SET,category-games,[GAME] Game
+  - RULE-SET,steam,[GAME] Game
+  - RULE-SET,epicgames,[GAME] Game
+  - RULE-SET,xbox,[GAME] Game
+  - RULE-SET,playstation,[GAME] Game
+  - RULE-SET,nintendo,[GAME] Game
+  - RULE-SET,geolocation-cn,[CN] Domestic
+  - RULE-SET,cn-domain,[CN] Domestic
+  - RULE-SET,cn-ip,[CN] Domestic,no-resolve
+  - GEOIP,CN,[CN] Domestic,no-resolve
+  - RULE-SET,geolocation-!cn,[GLOBAL] NonChina
+  - RULE-SET,google-ip,[G] Google,no-resolve
+  - RULE-SET,telegram-ip,[TG] Telegram,no-resolve
+  - MATCH,[FINAL] Final

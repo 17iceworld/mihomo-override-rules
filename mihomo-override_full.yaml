@@ -27,6 +27,40 @@ dns:
     - "+.msftncsi.com"
     - "+.stun.*.*"
     - "+.stun.*.*.*"
+    - "+.ntp.org"
+    - "+.pool.ntp.org"
+    - "time.*.com"
+    - "time.*.gov"
+    - "time.*.edu.cn"
+    - "time.apple.com"
+    - "time.asia.apple.com"
+    - "+.push.apple.com"
+    - "+.push-apple.com.akadns.net"
+    - "+.itunes.apple.com"
+    - "+.mzstatic.com"
+    - "+.cdn-apple.com"
+    - "+.apple-dns.net"
+    - "+.windowsupdate.com"
+    - "+.update.microsoft.com"
+    - "+.dl.delivery.mp.microsoft.com"
+    - "+.delivery.mp.microsoft.com"
+    - "+.xboxlive.com"
+    - "+.xboxservices.com"
+    - "+.playstation.net"
+    - "+.playstationnetwork.com"
+    - "+.nintendo.net"
+    - "+.nintendo.com"
+    - "+.steampowered.com"
+    - "+.steamcontent.com"
+    - "+.steamserver.net"
+    - "+.epicgames.com"
+    - "+.bank"
+    - "+.cmbchina.com"
+    - "+.95516.com"
+    - "+.unionpay.com"
+    - "+.alipay.com"
+    - "+.tenpay.com"
+    - "+.weixin.qq.com"
   default-nameserver:
     - 223.5.5.5
     - 119.29.29.29
@@ -56,6 +90,15 @@ dns:
     "rule-set:geolocation-cn":
       - https://dns.alidns.com/dns-query
       - https://doh.pub/dns-query
+    "rule-set:apple-cn":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+    "rule-set:microsoft":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+    "rule-set:onedrive":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
     "rule-set:ai-domain":
       - https://cloudflare-dns.com/dns-query
       - https://1.1.1.1/dns-query
@@ -63,6 +106,12 @@ dns:
       - https://cloudflare-dns.com/dns-query
       - https://1.1.1.1/dns-query
     "rule-set:openai":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:anthropic":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:apple":
       - https://cloudflare-dns.com/dns-query
       - https://1.1.1.1/dns-query
     "rule-set:youtube":
@@ -78,6 +127,45 @@ dns:
       - https://cloudflare-dns.com/dns-query
       - https://1.1.1.1/dns-query
     "rule-set:gitlab":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:tiktok":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:x-domain":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:twitter":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:instagram-domain":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:instagram":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:reddit-domain":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:reddit":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:category-games":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:steam":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:epicgames":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:xbox":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:playstation":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
+    "rule-set:nintendo":
       - https://cloudflare-dns.com/dns-query
       - https://1.1.1.1/dns-query
     "rule-set:geolocation-!cn":
@@ -135,6 +223,20 @@ proxy-groups:
     proxies:
       - REJECT
       - DIRECT
+  - name: "[APPLE-CN] Apple CN"
+    type: select
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/apple-cn.png?v=d670e50
+    proxies:
+      - DIRECT
+      - "[PROXY] PROXY"
+      - "[AUTO] Auto"
+  - name: "[APPLE] Apple"
+    type: select
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/apple.png?v=d670e50
+    proxies:
+      - "[PROXY] PROXY"
+      - "[AUTO] Auto"
+      - DIRECT
   - name: "[YT] YouTube"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/youtube.png?v=d670e50
@@ -159,6 +261,48 @@ proxy-groups:
   - name: "[GH] GitHub"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/github.png?v=d670e50
+    proxies:
+      - "[PROXY] PROXY"
+      - "[AUTO] Auto"
+      - DIRECT
+  - name: "[MS] Microsoft"
+    type: select
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/microsoft.png?v=d670e50
+    proxies:
+      - DIRECT
+      - "[PROXY] PROXY"
+      - "[AUTO] Auto"
+  - name: "[TT] TikTok"
+    type: select
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/tiktok.png?v=d670e50
+    proxies:
+      - "[PROXY] PROXY"
+      - "[AUTO] Auto"
+      - DIRECT
+  - name: "[X] X"
+    type: select
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/x.png?v=d670e50
+    proxies:
+      - "[PROXY] PROXY"
+      - "[AUTO] Auto"
+      - DIRECT
+  - name: "[IG] Instagram"
+    type: select
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/instagram.png?v=d670e50
+    proxies:
+      - "[PROXY] PROXY"
+      - "[AUTO] Auto"
+      - DIRECT
+  - name: "[RD] Reddit"
+    type: select
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/reddit.png?v=d670e50
+    proxies:
+      - "[PROXY] PROXY"
+      - "[AUTO] Auto"
+      - DIRECT
+  - name: "[GAME] Game"
+    type: select
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/game.png?v=d670e50
     proxies:
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
@@ -260,6 +404,28 @@ rule-providers:
       - "notebooklm.google.com"
       - "aistudio.google.com"
       - "makersuite.google.com"
+  x-domain:
+    type: inline
+    behavior: domain
+    payload:
+      - ".x.com"
+      - ".twitter.com"
+      - ".twimg.com"
+      - ".t.co"
+  instagram-domain:
+    type: inline
+    behavior: domain
+    payload:
+      - ".instagram.com"
+      - ".cdninstagram.com"
+  reddit-domain:
+    type: inline
+    behavior: domain
+    payload:
+      - ".reddit.com"
+      - ".redd.it"
+      - ".redditstatic.com"
+      - ".redditmedia.com"
   category-ads-all:
     type: http
     behavior: domain
@@ -283,6 +449,30 @@ rule-providers:
     path: ./ruleset/openai.mrs
     url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/openai.mrs
     path-in-bundle: geo/geosite/openai.mrs
+    interval: 86400
+  anthropic:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/anthropic.mrs
+    url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/anthropic.mrs
+    path-in-bundle: geo/geosite/anthropic.mrs
+    interval: 86400
+  apple-cn:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/apple-cn.mrs
+    url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple-cn.mrs
+    path-in-bundle: geo/geosite/apple-cn.mrs
+    interval: 86400
+  apple:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/apple.mrs
+    url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple.mrs
+    path-in-bundle: geo/geosite/apple.mrs
     interval: 86400
   youtube:
     type: http
@@ -340,6 +530,102 @@ rule-providers:
     url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/gitlab.mrs
     path-in-bundle: geo/geosite/gitlab.mrs
     interval: 86400
+  microsoft:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/microsoft.mrs
+    url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft.mrs
+    path-in-bundle: geo/geosite/microsoft.mrs
+    interval: 86400
+  onedrive:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/onedrive.mrs
+    url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/onedrive.mrs
+    path-in-bundle: geo/geosite/onedrive.mrs
+    interval: 86400
+  tiktok:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/tiktok.mrs
+    url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tiktok.mrs
+    path-in-bundle: geo/geosite/tiktok.mrs
+    interval: 86400
+  twitter:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/twitter.mrs
+    url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs
+    path-in-bundle: geo/geosite/twitter.mrs
+    interval: 86400
+  instagram:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/instagram.mrs
+    url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/instagram.mrs
+    path-in-bundle: geo/geosite/instagram.mrs
+    interval: 86400
+  reddit:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/reddit.mrs
+    url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/reddit.mrs
+    path-in-bundle: geo/geosite/reddit.mrs
+    interval: 86400
+  category-games:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/category-games.mrs
+    url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-games.mrs
+    path-in-bundle: geo/geosite/category-games.mrs
+    interval: 86400
+  steam:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/steam.mrs
+    url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam.mrs
+    path-in-bundle: geo/geosite/steam.mrs
+    interval: 86400
+  epicgames:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/epicgames.mrs
+    url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/epicgames.mrs
+    path-in-bundle: geo/geosite/epicgames.mrs
+    interval: 86400
+  xbox:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/xbox.mrs
+    url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/xbox.mrs
+    path-in-bundle: geo/geosite/xbox.mrs
+    interval: 86400
+  playstation:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/playstation.mrs
+    url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/playstation.mrs
+    path-in-bundle: geo/geosite/playstation.mrs
+    interval: 86400
+  nintendo:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/nintendo.mrs
+    url: https://gh-proxy.org/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/nintendo.mrs
+    path-in-bundle: geo/geosite/nintendo.mrs
+    interval: 86400
   geolocation-cn:
     type: http
     behavior: domain
@@ -385,16 +671,34 @@ rules:
   - RULE-SET,private-domain,DIRECT
   - RULE-SET,private-ip,DIRECT,no-resolve
   - RULE-SET,private,[LAN] Private,no-resolve
+  - RULE-SET,direct-domain,DIRECT
   - RULE-SET,category-ads-all,[AD] AdBlock
   - RULE-SET,ai-domain,[AI] AI
   - RULE-SET,category-ai-!cn,[AI] AI
   - RULE-SET,openai,[AI] AI
+  - RULE-SET,anthropic,[AI] AI
+  - RULE-SET,apple-cn,[APPLE-CN] Apple CN
+  - RULE-SET,apple,[APPLE] Apple
   - RULE-SET,youtube,[YT] YouTube
   - RULE-SET,google,[G] Google
   - RULE-SET,telegram,[TG] Telegram
   - RULE-SET,github,[GH] GitHub
   - RULE-SET,gitlab,[GH] GitHub
-  - RULE-SET,direct-domain,DIRECT
+  - RULE-SET,microsoft,[MS] Microsoft
+  - RULE-SET,onedrive,[MS] Microsoft
+  - RULE-SET,tiktok,[TT] TikTok
+  - RULE-SET,x-domain,[X] X
+  - RULE-SET,twitter,[X] X
+  - RULE-SET,instagram-domain,[IG] Instagram
+  - RULE-SET,instagram,[IG] Instagram
+  - RULE-SET,reddit-domain,[RD] Reddit
+  - RULE-SET,reddit,[RD] Reddit
+  - RULE-SET,category-games,[GAME] Game
+  - RULE-SET,steam,[GAME] Game
+  - RULE-SET,epicgames,[GAME] Game
+  - RULE-SET,xbox,[GAME] Game
+  - RULE-SET,playstation,[GAME] Game
+  - RULE-SET,nintendo,[GAME] Game
   - RULE-SET,geolocation-cn,[CN] Domestic
   - RULE-SET,cn-domain,[CN] Domestic
   - RULE-SET,cn-ip,[CN] Domestic,no-resolve

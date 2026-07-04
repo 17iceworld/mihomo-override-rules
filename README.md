@@ -11,7 +11,7 @@ Modular Mihomo override rules for Sparkle. This repository keeps routing and DNS
 - Domestic domain and IP routing with MetaCubeX China geosite/geoip rule sets.
 - DNS leak reduction with `fake-ip`, domestic DoH for China rules, and Cloudflare DoH for proxied domains.
 - Flat PNG proxy group icons served from the repository through GitHub raw URLs.
-- A generated `mihomo-override.yaml` for direct import or remote override use.
+- Generated light and full overrides for direct import or remote override use.
 
 ## Repository Layout
 
@@ -21,12 +21,21 @@ Modular Mihomo override rules for Sparkle. This repository keeps routing and DNS
 ├── icons/
 ├── modules/
 │   ├── dns.yaml
+│   ├── full-dns.yaml
+│   ├── full-proxy-groups.yaml
+│   ├── full-rule-providers.yaml
+│   ├── full-rules.yaml
 │   ├── proxy-groups.yaml
 │   ├── rule-providers.yaml
 │   └── rules.yaml
 ├── rules/
 │   ├── ai.yaml
-│   └── direct.yaml
+│   ├── direct.yaml
+│   ├── instagram.yaml
+│   ├── reddit.yaml
+│   └── x.yaml
+├── tests/
+│   └── cases.yaml
 └── scripts/
     └── build-override.js
 ```
@@ -39,7 +48,12 @@ npm run build
 npm test
 ```
 
-`npm run build` merges files from `modules/` in a fixed order and writes `mihomo-override.yaml`.
+`npm run build` merges files from `modules/` in a fixed order and writes:
+
+- `mihomo-override.yaml`: light override.
+- `mihomo-override_full.yaml`: full override with Apple CN/Global, Microsoft, TikTok, X, Instagram, Reddit, Game, and expanded AI routing.
+
+Remote rule-provider URLs are generated through `https://gh-proxy.org/https://raw.githubusercontent.com/...`.
 
 ## Sparkle Usage
 
@@ -48,6 +62,12 @@ npm test
 
 ```text
 https://raw.githubusercontent.com/<your-user>/<your-repo>/main/mihomo-override.yaml
+```
+
+Use the full version if you want the expanded service groups:
+
+```text
+https://raw.githubusercontent.com/<your-user>/<your-repo>/main/mihomo-override_full.yaml
 ```
 
 3. Apply the profile and check that Mihomo starts without provider or strategy group errors.
@@ -59,6 +79,11 @@ https://raw.githubusercontent.com/<your-user>/<your-repo>/main/mihomo-override.y
 - Google: `google.com` should match `[G] Google`.
 - Telegram: `telegram.org` should match `[TG] Telegram`.
 - GitHub and GitLab: `github.com` and `gitlab.com` should match `[GH] GitHub`.
+- Apple China: `apple.com.cn` should match `[APPLE-CN] Apple CN` in the full override.
+- Apple global: `icloud.com` should match `[APPLE] Apple` in the full override.
+- Microsoft: `microsoft.com` should match `[MS] Microsoft` in the full override.
+- TikTok, X, Instagram, and Reddit should match their dedicated full override groups.
+- Game: `store.steampowered.com` should match `[GAME] Game` in the full override.
 - Domestic direct: common China sites such as `baidu.com`, `qq.com`, and `taobao.com` should match `[CN] Domestic`; `dogni.work` should match `DIRECT`.
 - Non-China: geolocation non-China domains should match `[GLOBAL] NonChina`.
 - Ads: domains from MetaCubeX `category-ads-all` should match `[AD] AdBlock`.
