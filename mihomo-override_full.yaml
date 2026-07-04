@@ -191,7 +191,7 @@ proxy-groups:
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/auto.png?v=d670e50
     include-all: true
     exclude-type: direct
-    url: https://www.apple.com/library/test/success.html
+    url: https://www.gstatic.com/generate_204
     interval: 300
     timeout: 5000
     lazy: true
