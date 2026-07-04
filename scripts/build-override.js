@@ -153,6 +153,25 @@ function validateGhProxy(output, profileName) {
   }
 }
 
+function validateDnsPolicies(output, profileName) {
+  const providerBlocks = ruleProviderBlocks(output);
+  const availableRuleProviders = new Set(providerBlocks.keys());
+
+  for (const match of output.matchAll(/^    "rule-set:([^"]+)":\n((?:      - .+\n)+)/gmu)) {
+    const provider = match[1];
+    const policy = match[2];
+    if (!availableRuleProviders.has(provider)) {
+      throw new Error(`${profileName}: DNS policy references missing rule-provider: ${provider}`);
+    }
+    if (provider === "direct-global-domain" && /(alidns\.com|doh\.pub)/u.test(policy)) {
+      throw new Error(`${profileName}: direct-global-domain must not use China DNS providers`);
+    }
+    if (provider === "direct-cn-domain" && /(cloudflare-dns\.com|1\.1\.1\.1)/u.test(policy)) {
+      throw new Error(`${profileName}: direct-cn-domain must not use Cloudflare DNS providers`);
+    }
+  }
+}
+
 function validateCases(output) {
   const casesFile = "tests/cases.yaml";
   const source = readText(casesFile);
@@ -188,6 +207,7 @@ function build(profile) {
   );
   validateReferences(output, profile.name);
   validateGhProxy(output, profile.name);
+  validateDnsPolicies(output, profile.name);
   return output;
 }
 

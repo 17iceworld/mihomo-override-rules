@@ -65,8 +65,8 @@ dns:
     - 223.5.5.5
     - 119.29.29.29
   proxy-server-nameserver:
-    - https://dns.alidns.com/dns-query
-    - https://doh.pub/dns-query
+    - https://cloudflare-dns.com/dns-query
+    - https://1.1.1.1/dns-query
   direct-nameserver:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
@@ -81,9 +81,12 @@ dns:
     "rule-set:private-domain":
       - https://dns.alidns.com/dns-query
       - https://doh.pub/dns-query
-    "rule-set:direct-domain":
+    "rule-set:direct-cn-domain":
       - https://dns.alidns.com/dns-query
       - https://doh.pub/dns-query
+    "rule-set:direct-global-domain":
+      - https://cloudflare-dns.com/dns-query
+      - https://1.1.1.1/dns-query
     "rule-set:cn-domain":
       - https://dns.alidns.com/dns-query
       - https://doh.pub/dns-query
@@ -343,7 +346,12 @@ rule-providers:
       - "203.0.113.0/24"
       - "224.0.0.0/4"
       - "240.0.0.0/4"
-  direct-domain:
+  direct-cn-domain:
+    type: inline
+    behavior: domain
+    payload:
+      - ".cn"
+  direct-global-domain:
     type: inline
     behavior: domain
     payload:
@@ -351,9 +359,6 @@ rule-providers:
       - "*.local"
       - "*.lan"
       - "*.home.arpa"
-      - ".cn"
-      - ".中国"
-      - ".中國"
       - ".dogni.work"
   ai-domain:
     type: inline
@@ -651,7 +656,8 @@ rules:
   - RULE-SET,private-domain,DIRECT
   - RULE-SET,private-ip,DIRECT,no-resolve
   - RULE-SET,private,[LAN] Private,no-resolve
-  - RULE-SET,direct-domain,DIRECT
+  - RULE-SET,direct-global-domain,DIRECT
+  - RULE-SET,direct-cn-domain,DIRECT
   - RULE-SET,category-ads-all,[AD] AdBlock
   - RULE-SET,ai-domain,[AI] AI
   - RULE-SET,category-ai-!cn,[AI] AI

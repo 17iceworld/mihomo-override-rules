@@ -25,10 +25,14 @@ rule-providers:
       - "203.0.113.0/24"
       - "224.0.0.0/4"
       - "240.0.0.0/4"
-  direct-domain:
+  direct-cn-domain:
     type: inline
     behavior: domain
-    payload-from: rules/direct.yaml
+    payload-from: rules/direct-cn.yaml
+  direct-global-domain:
+    type: inline
+    behavior: domain
+    payload-from: rules/direct-global.yaml
   ai-domain:
     type: inline
     behavior: domain

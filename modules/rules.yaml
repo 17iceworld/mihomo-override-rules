@@ -2,6 +2,8 @@ rules:
   - RULE-SET,private-domain,DIRECT
   - RULE-SET,private-ip,DIRECT,no-resolve
   - RULE-SET,private,[LAN] Private,no-resolve
+  - RULE-SET,direct-global-domain,DIRECT
+  - RULE-SET,direct-cn-domain,DIRECT
   - RULE-SET,category-ads-all,[AD] AdBlock
   - RULE-SET,ai-domain,[AI] AI
   - RULE-SET,category-ai-!cn,[AI] AI
@@ -11,7 +13,6 @@ rules:
   - RULE-SET,telegram,[TG] Telegram
   - RULE-SET,github,[GH] GitHub
   - RULE-SET,gitlab,[GH] GitHub
-  - RULE-SET,direct-domain,DIRECT
   - RULE-SET,geolocation-cn,[CN] Domestic
   - RULE-SET,cn-domain,[CN] Domestic
   - RULE-SET,cn-ip,[CN] Domestic,no-resolve
