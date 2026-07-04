@@ -13,14 +13,12 @@ proxy-groups:
     include-all: true
     proxies:
       - "[AUTO] Auto"
-      - DIRECT
   - name: "[AI] AI"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/ai.png?v=d670e50
     proxies:
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
-      - DIRECT
     include-all: true
   - name: "[AD] AdBlock"
     type: select
@@ -34,35 +32,30 @@ proxy-groups:
     proxies:
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
-      - DIRECT
   - name: "[G] Google"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/google.png?v=d670e50
     proxies:
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
-      - DIRECT
   - name: "[TG] Telegram"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/telegram.png?v=d670e50
     proxies:
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
-      - DIRECT
   - name: "[GH] GitHub"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/github.png?v=d670e50
     proxies:
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
-      - DIRECT
   - name: "[GLOBAL] NonChina"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/nonchina.png?v=d670e50
     proxies:
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
-      - DIRECT
   - name: "[LAN] Private"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/private.png?v=d670e50
@@ -83,4 +76,3 @@ proxy-groups:
     proxies:
       - "[PROXY] PROXY"
       - "[AUTO] Auto"
-      - DIRECT
