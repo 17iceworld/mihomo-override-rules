@@ -16,7 +16,6 @@ rules:
   - RULE-SET,geolocation-cn,Domestic
   - RULE-SET,cn-domain,Domestic
   - RULE-SET,cn-ip,Domestic,no-resolve
-  - GEOIP,CN,Domestic,no-resolve
   - RULE-SET,geolocation-!cn,NonChina
   - RULE-SET,google-ip,Google,no-resolve
   - RULE-SET,telegram-ip,Telegram,no-resolve

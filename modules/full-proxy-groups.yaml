@@ -7,6 +7,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     timeout: 5000
+    tolerance: 50
     lazy: true
   - name: "PROXY"
     type: select
@@ -14,7 +15,6 @@ proxy-groups:
     include-all: true
     proxies:
       - "Auto"
-      - DIRECT
   - name: "AI"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/ai.png?v=d670e50

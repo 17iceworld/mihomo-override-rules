@@ -12,6 +12,7 @@ Modular Mihomo override rules for Sparkle. This repository keeps routing, DNS po
 - Inline custom domain rules under `rules/` for AI, direct CN, direct global, X, Instagram, and Reddit.
 - Remote MetaCubeX MRS rule providers for common services, China geosite/geoip, private IP, ads, and game platforms.
 - DNS policy using `fake-ip`, AliDNS/DNSPod DoH for domestic rules, and Cloudflare DoH for proxied or global rules.
+- Explicitly closed LAN access and routed DNS transports (`#DIRECT` for domestic/bootstrap traffic and `#PROXY` for global queries).
 
 ## Profile Differences
 
@@ -118,7 +119,27 @@ npm test
 - HTTP rule providers include required fields
 - generated rule-provider URLs do not use unproxied raw GitHub URLs
 - DNS `rule-set:` policies reference existing providers
+- generated overrides are current and check mode never rewrites them
+- proxy groups have no unknown references or dependency cycles
+- rules contain no duplicates, end in exactly one `MATCH`, and IP rules use `no-resolve`
+- encrypted DNS bootstrap, closed LAN access, and explicit domestic/global DNS routes
 - cases in `tests/cases.yaml` match rules in the full profile
+
+It also runs a compatibility audit against a credential-free three-node fixture. To audit a real subscription without modifying or printing its nodes:
+
+```bash
+npm run audit:subscription -- /absolute/path/to/subscription.yaml
+```
+
+For cross-platform TUN and performance verification, follow `tests/CROSS_PLATFORM_TESTS.zh-CN.md`. The benchmark commands require at least ten samples:
+
+```bash
+npm run benchmark -- --label baseline --profile light --network home --runs 10 --output baseline.json
+npm run benchmark -- --label candidate --profile light --network home --runs 10 --output candidate.json
+npm run benchmark:compare -- baseline.json candidate.json
+```
+
+Only compare adjacent runs from the same platform and network. The comparator rejects median DNS or request regressions above 10%.
 
 Generated files start with:
 

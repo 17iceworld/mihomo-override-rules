@@ -144,6 +144,66 @@ function validateReferences(output, profileName) {
   }
 }
 
+function validateRuleSafety(output, profileName) {
+  const rules = [...output.matchAll(/^  - ([A-Z-]+,[^\n]+)$/gmu)].map((match) => match[1].trim());
+  const duplicates = rules.filter((rule, index) => rules.indexOf(rule) !== index);
+  if (duplicates.length > 0) {
+    throw new Error(`${profileName}: duplicate rules: ${[...new Set(duplicates)].join(", ")}`);
+  }
+
+  const matches = rules.filter((rule) => rule.startsWith("MATCH,"));
+  if (matches.length !== 1 || !rules.at(-1)?.startsWith("MATCH,")) {
+    throw new Error(`${profileName}: rules must contain exactly one final MATCH rule`);
+  }
+
+  const providerBlocks = ruleProviderBlocks(output);
+  for (const rule of rules) {
+    const [type, provider, _outbound, ...options] = rule.split(",");
+    const isIpRule = type === "GEOIP" || type === "IP-CIDR" || type === "IP-CIDR6";
+    const isIpProvider = type === "RULE-SET"
+      && /^    behavior: ipcidr$/mu.test(providerBlocks.get(provider) ?? "");
+    if ((isIpRule || isIpProvider) && !options.includes("no-resolve")) {
+      throw new Error(`${profileName}: IP rule must use no-resolve: ${rule}`);
+    }
+  }
+}
+
+function validateProxyGroups(output, profileName) {
+  const section = output.match(/^proxy-groups:\n([\s\S]*?)^rule-providers:/mu)?.[1] ?? "";
+  const blocks = section.split(/(?=^  - name: )/mu).filter((block) => /^  - name: /mu.test(block));
+  const groups = new Map();
+  for (const block of blocks) {
+    const name = block.match(/^  - name: (.+)$/mu)?.[1]?.trim().replace(/^['"]|['"]$/gu, "");
+    if (!name) continue;
+    if (groups.has(name)) throw new Error(`${profileName}: duplicate proxy group: ${name}`);
+    const proxiesBlock = block.match(/^    proxies:\n((?:      - .+\n?)*)/mu)?.[1] ?? "";
+    const proxies = [...proxiesBlock.matchAll(/^      - (.+)$/gmu)]
+      .map((match) => match[1].trim().replace(/^['"]|['"]$/gu, ""));
+    groups.set(name, proxies);
+  }
+
+  const builtins = new Set(["DIRECT", "REJECT", "REJECT-DROP", "PASS", "COMPATIBLE"]);
+  for (const [name, proxies] of groups) {
+    for (const proxy of proxies) {
+      if (!groups.has(proxy) && !builtins.has(proxy)) {
+        throw new Error(`${profileName}: group ${name} references unknown proxy/group: ${proxy}`);
+      }
+    }
+  }
+
+  const visiting = new Set();
+  const visited = new Set();
+  function visit(name) {
+    if (visiting.has(name)) throw new Error(`${profileName}: proxy group cycle includes ${name}`);
+    if (visited.has(name)) return;
+    visiting.add(name);
+    for (const child of groups.get(name) ?? []) if (groups.has(child)) visit(child);
+    visiting.delete(name);
+    visited.add(name);
+  }
+  for (const name of groups.keys()) visit(name);
+}
+
 function validateGhProxy(output, profileName) {
   for (const match of output.matchAll(/^    url: (https?:\/\/[^\n]+)$/gmu)) {
     const url = match[1];
@@ -168,6 +228,46 @@ function validateDnsPolicies(output, profileName) {
     }
     if (provider === "direct-cn-domain" && /(cloudflare-dns\.com|1\.1\.1\.1)/u.test(policy)) {
       throw new Error(`${profileName}: direct-cn-domain must not use Cloudflare DNS providers`);
+    }
+
+    const domestic = new Set(["private-domain", "direct-cn-domain", "cn-domain", "geolocation-cn", "apple-cn", "microsoft", "onedrive"]);
+    const routes = [...policy.matchAll(/^      - (.+)$/gmu)].map((match) => match[1]);
+    const requiredRoute = domestic.has(provider) ? "#DIRECT" : "#PROXY";
+    if (routes.some((route) => !route.endsWith(requiredRoute))) {
+      throw new Error(`${profileName}: DNS policy ${provider} must use ${requiredRoute}`);
+    }
+  }
+
+  if (!/^allow-lan: false$/mu.test(output)) {
+    throw new Error(`${profileName}: allow-lan must be false`);
+  }
+  if (!/^  respect-rules: true$/mu.test(output) || !/^  prefer-h3: false$/mu.test(output)) {
+    throw new Error(`${profileName}: DNS must use respect-rules and disable prefer-h3`);
+  }
+  if (/^proxies:/mu.test(output)) {
+    throw new Error(`${profileName}: override must not define or replace subscription proxies`);
+  }
+  const proxyGroup = output.match(/^  - name: "PROXY"\n([\s\S]*?)(?=^  - name:|^rule-providers:)/mu)?.[1] ?? "";
+  if (/^      - DIRECT$/mu.test(proxyGroup)) {
+    throw new Error(`${profileName}: PROXY must not allow DIRECT because global DNS uses #PROXY`);
+  }
+
+  const defaultNameservers = output.match(/^  default-nameserver:\n((?:    - .+\n)+)/mu)?.[1] ?? "";
+  if (!defaultNameservers || /^    - (?!tls:\/\/|https:\/\/)/mu.test(defaultNameservers)) {
+    throw new Error(`${profileName}: bootstrap DNS must be encrypted`);
+  }
+
+  for (const key of ["nameserver"]) {
+    const block = output.match(new RegExp(`^  ${key}:\\n((?:    - .+\\n)+)`, "mu"))?.[1] ?? "";
+    if (!block || [...block.matchAll(/^    - (.+)$/gmu)].some((match) => !match[1].endsWith("#PROXY"))) {
+      throw new Error(`${profileName}: ${key} must explicitly use #PROXY`);
+    }
+  }
+
+  for (const key of ["proxy-server-nameserver", "direct-nameserver"]) {
+    const block = output.match(new RegExp(`^  ${key}:\\n((?:    - .+\\n)+)`, "mu"))?.[1] ?? "";
+    if (!block || [...block.matchAll(/^    - (.+)$/gmu)].some((match) => !match[1].endsWith("#DIRECT"))) {
+      throw new Error(`${profileName}: ${key} must explicitly use #DIRECT`);
     }
   }
 }
@@ -206,20 +306,32 @@ function build(profile) {
     `${header}${profile.moduleFiles.map((file) => expandPayloadFrom(readText(file))).join("\n\n")}\n`,
   );
   validateReferences(output, profile.name);
+  validateProxyGroups(output, profile.name);
+  validateRuleSafety(output, profile.name);
   validateGhProxy(output, profile.name);
   validateDnsPolicies(output, profile.name);
   return output;
 }
 
 const outputs = new Map();
+const checkOnly = process.argv.includes("--check");
 for (const profile of profiles) {
   const output = build(profile);
   outputs.set(profile.name, output);
-  writeFileSync(resolve(root, profile.outputFile), output);
-  console.log(`Wrote ${profile.outputFile}`);
+  const outputPath = resolve(root, profile.outputFile);
+  if (checkOnly) {
+    const existing = readFileSync(outputPath, "utf8");
+    if (existing !== output) {
+      throw new Error(`${profile.outputFile} is stale; run npm run build`);
+    }
+    console.log(`Checked ${profile.outputFile}`);
+  } else {
+    writeFileSync(outputPath, output);
+    console.log(`Wrote ${profile.outputFile}`);
+  }
 }
 
-if (process.argv.includes("--check")) {
+if (checkOnly) {
   const ruleFiles = readdirSync(resolve(root, "rules"))
     .filter((file) => file.endsWith(".yaml"))
     .map((file) => `rules/${file}`);

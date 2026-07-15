@@ -1,0 +1,11 @@
+{
+  "allow-lan": true,
+  "dns": {"enable": true, "enhanced-mode": "fake-ip"},
+  "proxies": [
+    {"name": "fixture-node-a", "type": "vless", "server": "192.0.2.10", "port": 443, "uuid": "00000000-0000-4000-8000-000000000001"},
+    {"name": "fixture-node-b", "type": "vless", "server": "198.51.100.20", "port": 443, "uuid": "00000000-0000-4000-8000-000000000002"},
+    {"name": "fixture-node-c", "type": "vless", "server": "203.0.113.30", "port": 443, "uuid": "00000000-0000-4000-8000-000000000003"}
+  ],
+  "proxy-groups": [{"name": "Fixture", "type": "select", "proxies": ["fixture-node-a"]}],
+  "rules": ["MATCH,Fixture"]
+}
