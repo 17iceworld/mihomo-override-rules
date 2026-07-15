@@ -1,7 +1,7 @@
 proxy-groups:
   - name: "Auto"
     type: url-test
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/auto.png?v=d670e50
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/auto.png?v=20260715
     include-all: true
     exclude-type: direct
     url: https://www.gstatic.com/generate_204
@@ -11,70 +11,70 @@ proxy-groups:
     lazy: true
   - name: "PROXY"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/proxy.png?v=d670e50
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/proxy.png?v=20260715
     include-all: true
     proxies:
       - "Auto"
   - name: "AI"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/ai.png?v=d670e50
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/ai.png?v=20260715
     proxies:
       - "PROXY"
       - "Auto"
     include-all: true
   - name: "AdBlock"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/adblock.png?v=d670e50
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/adblock.png?v=20260715
     proxies:
       - REJECT
       - DIRECT
   - name: "YouTube"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/youtube.png?v=d670e50
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/youtube.png?v=20260715
     proxies:
       - "PROXY"
       - "Auto"
   - name: "Google"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/google.png?v=d670e50
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/google.png?v=20260715
     proxies:
       - "PROXY"
       - "Auto"
   - name: "Telegram"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/telegram.png?v=d670e50
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/telegram.png?v=20260715
     proxies:
       - "PROXY"
       - "Auto"
   - name: "GitHub"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/github.png?v=d670e50
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/github.png?v=20260715
     proxies:
       - "PROXY"
       - "Auto"
   - name: "NonChina"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/nonchina.png?v=d670e50
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/nonchina.png?v=20260715
     proxies:
       - "PROXY"
       - "Auto"
   - name: "Private"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/private.png?v=d670e50
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/private.png?v=20260715
     proxies:
       - DIRECT
       - "PROXY"
       - "Auto"
   - name: "Domestic"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/domestic.png?v=d670e50
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/domestic.png?v=20260715
     proxies:
       - DIRECT
       - "PROXY"
       - "Auto"
   - name: "Final"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/final.png?v=d670e50
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/final.png?v=20260715
     proxies:
       - "PROXY"
       - "Auto"
