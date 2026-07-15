@@ -278,7 +278,7 @@ proxy-groups:
       - "Auto"
   - name: "Game"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/game.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/game.png?v=20260715-game-blue
     proxies:
       - "PROXY"
       - "Auto"
