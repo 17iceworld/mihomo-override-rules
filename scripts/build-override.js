@@ -28,6 +28,8 @@ const profiles = [
 ];
 const rawGitHubPrefix = "https://raw.githubusercontent.com/";
 const ghProxyPrefix = "https://gh-proxy.org/";
+const jsDelivrPrefix = "https://cdn.jsdelivr.net/gh/";
+const ruleMirror = process.env.RULE_MIRROR ?? "gh-proxy";
 
 function readText(file) {
   return readFileSync(resolve(root, file), "utf8").replace(/\s+$/u, "");
@@ -78,8 +80,18 @@ function ruleProviderBlocks(output) {
   return blocks;
 }
 
-function proxiedRemoteUrls(source) {
-  return source.replaceAll(`url: ${rawGitHubPrefix}`, `url: ${ghProxyPrefix}${rawGitHubPrefix}`);
+function mirroredRemoteUrls(source) {
+  if (ruleMirror === "direct") return source;
+  if (ruleMirror === "gh-proxy") {
+    return source.replaceAll(`url: ${rawGitHubPrefix}`, `url: ${ghProxyPrefix}${rawGitHubPrefix}`);
+  }
+  if (ruleMirror === "jsdelivr") {
+    return source.replaceAll(
+      /url: https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)/gu,
+      `url: ${jsDelivrPrefix}$1/$2@$3/$4`,
+    );
+  }
+  throw new Error(`Unsupported RULE_MIRROR "${ruleMirror}"; use direct, gh-proxy, or jsdelivr`);
 }
 
 function validateModules(files) {
@@ -204,11 +216,19 @@ function validateProxyGroups(output, profileName) {
   for (const name of groups.keys()) visit(name);
 }
 
-function validateGhProxy(output, profileName) {
-  for (const match of output.matchAll(/^    url: (https?:\/\/[^\n]+)$/gmu)) {
-    const url = match[1];
-    if (url.startsWith(rawGitHubPrefix)) {
-      throw new Error(`${profileName}: raw GitHub URL is not proxied: ${url}`);
+function validateRuleMirror(output, profileName) {
+  for (const [provider, block] of ruleProviderBlocks(output)) {
+    if (!/^    type: http$/mu.test(block)) continue;
+    const url = block.match(/^    url: (https?:\/\/[^\n]+)$/mu)?.[1];
+    if (!url) throw new Error(`${profileName}: HTTP rule-provider ${provider} has no URL`);
+    if (ruleMirror === "direct" && !url.startsWith(rawGitHubPrefix)) {
+      throw new Error(`${profileName}: direct mirror produced unexpected URL for ${provider}: ${url}`);
+    }
+    if (ruleMirror === "gh-proxy" && !url.startsWith(`${ghProxyPrefix}${rawGitHubPrefix}`)) {
+      throw new Error(`${profileName}: gh-proxy mirror produced unexpected URL for ${provider}: ${url}`);
+    }
+    if (ruleMirror === "jsdelivr" && !url.startsWith(jsDelivrPrefix)) {
+      throw new Error(`${profileName}: jsdelivr mirror produced unexpected URL for ${provider}: ${url}`);
     }
   }
 }
@@ -275,6 +295,22 @@ function validateDnsPolicies(output, profileName) {
 function validateCases(output) {
   const casesFile = "tests/cases.yaml";
   const source = readText(casesFile);
+  const providerBlocks = ruleProviderBlocks(output);
+  const orderedProviders = [...output.matchAll(/^  - RULE-SET,([^,]+),([^,\n]+)/gmu)]
+    .map((match) => ({ provider: match[1], outbound: match[2] }));
+
+  function inlineDomains(provider) {
+    const block = providerBlocks.get(provider) ?? "";
+    if (!/^    type: inline$/mu.test(block) || !/^    behavior: domain$/mu.test(block)) return [];
+    return [...block.matchAll(/^      - "([^"]+)"$/gmu)].map((match) => match[1]);
+  }
+
+  function domainMatches(pattern, domain) {
+    if (pattern.startsWith("*.")) return domain.endsWith(pattern.slice(1)) && domain !== pattern.slice(2);
+    if (pattern.startsWith("+.")) return domain === pattern.slice(2) || domain.endsWith(pattern.slice(1));
+    if (pattern.startsWith(".")) return domain === pattern.slice(1) || domain.endsWith(pattern);
+    return domain === pattern;
+  }
 
   for (const block of source.split(/\n(?=  - domain: )/u)) {
     const domain = block.match(/domain: "([^"]+)"/u)?.[1];
@@ -292,6 +328,22 @@ function validateCases(output) {
     if (!output.includes(`RULE-SET,${provider},${outbound}`)) {
       throw new Error(`${casesFile}: case for ${domain} cannot find RULE-SET,${provider},${outbound}`);
     }
+
+    const expectedInlineDomains = inlineDomains(provider);
+    if (expectedInlineDomains.length > 0) {
+      if (!expectedInlineDomains.some((pattern) => domainMatches(pattern, domain))) {
+        throw new Error(`${casesFile}: ${domain} does not match inline provider ${provider}`);
+      }
+      const firstInlineMatch = orderedProviders.find(({ provider: candidate }) =>
+        inlineDomains(candidate).some((pattern) => domainMatches(pattern, domain))
+      );
+      if (firstInlineMatch?.provider !== provider || firstInlineMatch.outbound !== outbound) {
+        throw new Error(
+          `${casesFile}: ${domain} first matches ${firstInlineMatch?.provider ?? "no inline provider"}`
+          + ` -> ${firstInlineMatch?.outbound ?? "unknown"}, expected ${provider} -> ${outbound}`,
+        );
+      }
+    }
   }
 }
 
@@ -302,13 +354,13 @@ function build(profile) {
     "# Edit files under modules/ and rules/ instead.",
     "",
   ].join("\n");
-  const output = proxiedRemoteUrls(
+  const output = mirroredRemoteUrls(
     `${header}${profile.moduleFiles.map((file) => expandPayloadFrom(readText(file))).join("\n\n")}\n`,
   );
   validateReferences(output, profile.name);
   validateProxyGroups(output, profile.name);
   validateRuleSafety(output, profile.name);
-  validateGhProxy(output, profile.name);
+  validateRuleMirror(output, profile.name);
   validateDnsPolicies(output, profile.name);
   return output;
 }

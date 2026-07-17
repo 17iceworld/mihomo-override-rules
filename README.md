@@ -108,7 +108,14 @@ npm run build
 npm test
 ```
 
-`npm run build` merges the configured module files in `scripts/build-override.js`, expands each `payload-from` rule file, proxies remote GitHub rule-provider URLs through `https://gh-proxy.org/`, then writes both generated override files.
+`npm run build` merges the configured module files in `scripts/build-override.js`, expands each `payload-from` rule file, applies the selected rule mirror, then writes both generated override files. The default mirror remains `gh-proxy` for restricted networks; choose another source when building if needed:
+
+```bash
+RULE_MIRROR=direct npm run build
+RULE_MIRROR=jsdelivr npm run build
+```
+
+Supported values are `direct`, `gh-proxy`, and `jsdelivr`. Use the same value with `npm test` when checking a non-default generated profile.
 
 `npm test` runs the build in check mode. It validates:
 
@@ -124,6 +131,7 @@ npm test
 - rules contain no duplicates, end in exactly one `MATCH`, and IP rules use `no-resolve`
 - encrypted DNS bootstrap, closed LAN access, and explicit domestic/global DNS routes
 - cases in `tests/cases.yaml` match rules in the full profile
+- inline-domain cases resolve to the expected first matching inline provider and outbound
 
 It also runs a compatibility audit against a credential-free three-node fixture. To audit a real subscription without modifying or printing its nodes:
 

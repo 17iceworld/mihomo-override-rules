@@ -1,7 +1,7 @@
 proxy-groups:
   - name: "Auto"
     type: url-test
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/auto.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/auto.png?v=20260717
     include-all: true
     exclude-type: direct
     url: https://www.gstatic.com/generate_204
@@ -11,120 +11,120 @@ proxy-groups:
     lazy: true
   - name: "PROXY"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/proxy.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/proxy.png?v=20260717
     include-all: true
     proxies:
       - "Auto"
   - name: "AI"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/ai.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/ai.png?v=20260717
     proxies:
       - "PROXY"
       - "Auto"
     include-all: true
   - name: "AdBlock"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/adblock.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/adblock.png?v=20260717
     proxies:
       - REJECT
       - DIRECT
   - name: "Apple CN"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/apple-cn.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/apple-cn.png?v=20260717
     proxies:
       - DIRECT
       - "PROXY"
       - "Auto"
   - name: "Apple"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/apple.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/apple.png?v=20260717
     proxies:
       - "PROXY"
       - "Auto"
   - name: "YouTube"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/youtube.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/youtube.png?v=20260717
     proxies:
       - "PROXY"
       - "Auto"
   - name: "Google"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/google.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/google.png?v=20260717
     proxies:
       - "PROXY"
       - "Auto"
   - name: "Telegram"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/telegram.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/telegram.png?v=20260717
     proxies:
       - "PROXY"
       - "Auto"
   - name: "GitHub"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/github.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/github.png?v=20260717
     proxies:
       - "PROXY"
       - "Auto"
   - name: "Microsoft"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/microsoft.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/microsoft.png?v=20260717
     proxies:
       - DIRECT
       - "PROXY"
       - "Auto"
   - name: "TikTok"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/tiktok.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/tiktok.png?v=20260717
     proxies:
       - "PROXY"
       - "Auto"
   - name: "X"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/x.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/x.png?v=20260717
     proxies:
       - "PROXY"
       - "Auto"
   - name: "Instagram"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/instagram.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/instagram.png?v=20260717
     proxies:
       - "PROXY"
       - "Auto"
   - name: "Reddit"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/reddit.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/reddit.png?v=20260717
     proxies:
       - "PROXY"
       - "Auto"
   - name: "Game"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/game.png?v=20260715-game-blue
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/game.png?v=20260717
     proxies:
       - "PROXY"
       - "Auto"
   - name: "NonChina"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/nonchina.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/nonchina.png?v=20260717
     proxies:
       - "PROXY"
       - "Auto"
   - name: "Private"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/private.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/private.png?v=20260717
     proxies:
       - DIRECT
       - "PROXY"
       - "Auto"
   - name: "Domestic"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/domestic.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/domestic.png?v=20260717
     proxies:
       - DIRECT
       - "PROXY"
       - "Auto"
   - name: "Final"
     type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/codex/nhk-radiru-fake-ip-filter/icons/final.png?v=20260715
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/final.png?v=20260717
     proxies:
       - "PROXY"
       - "Auto"
