@@ -214,6 +214,12 @@ function validateProxyGroups(output, profileName) {
     visited.add(name);
   }
   for (const name of groups.keys()) visit(name);
+
+  for (const name of ["Google", "GitHub", "Microsoft"]) {
+    if (groups.has(name) && groups.get(name)?.[0] !== "AI") {
+      throw new Error(`${profileName}: ${name} must inherit AI first for authentication exit consistency`);
+    }
+  }
 }
 
 function validateRuleMirror(output, profileName) {

@@ -127,7 +127,7 @@ function proxyRequest(proxyPort, hostname, targetPort, timeout = 8000) {
 function runtimeConfig({ mixedPort, apiPort, providers, rules, hosts }) {
   const providerYaml = Object.entries(providers).map(([name, provider]) => `  ${name}:\n    type: ${provider.type}\n    behavior: domain\n    format: mrs\n    path: ${provider.path}${provider.url ? `\n    url: ${provider.url}\n    interval: 1` : ""}${provider.proxy ? `\n    proxy: ${provider.proxy}` : ""}`).join("\n");
   const hostYaml = Object.entries(hosts).map(([name, address]) => `  \"${name}\": \"${address}\"`).join("\n");
-  return `mixed-port: ${mixedPort}\nexternal-controller: 127.0.0.1:${apiPort}\nlog-level: debug\nmode: rule\nipv6: true\nhosts:\n${hostYaml}\nproxy-groups:\n  - name: AdBlock\n    type: select\n    proxies: [REJECT, DIRECT]\n  - name: AI\n    type: select\n    proxies: [DIRECT]\n  - name: Domestic\n    type: select\n    proxies: [DIRECT]\nrule-providers:\n${providerYaml}\nrules:\n${rules.map((rule) => `  - ${rule}`).join("\n")}\n`;
+  return `mixed-port: ${mixedPort}\nexternal-controller: 127.0.0.1:${apiPort}\nlog-level: debug\nmode: rule\nipv6: true\nhosts:\n${hostYaml}\nproxy-groups:\n  - name: AdBlock\n    type: select\n    proxies: [REJECT, DIRECT]\n  - name: AI\n    type: select\n    proxies: [DIRECT]\n  - name: Domestic\n    type: select\n    proxies: [DIRECT]\n  - name: Google\n    type: select\n    proxies: [AI, DIRECT]\n  - name: GitHub\n    type: select\n    proxies: [AI, DIRECT]\n  - name: Microsoft\n    type: select\n    proxies: [AI, DIRECT]\nrule-providers:\n${providerYaml}\nrules:\n${rules.map((rule) => `  - ${rule}`).join("\n")}\n`;
 }
 
 async function validateRemoteMrs() {
@@ -178,7 +178,8 @@ async function validateRuleOrderAndIpv6() {
   const home = join(tempRoot, "rule-order");
   const rulesetDirectory = join(home, "ruleset");
   const ads = convertMrs("ads", ["overlap.test", "ads-only.test"], rulesetDirectory);
-  const ai = convertMrs("ai", ["overlap.test", "ai-only.test"], rulesetDirectory);
+  const aiServices = ["chatgpt.com", "claude.ai", "gemini.google.com", "copilot.microsoft.com", "cursor.com"];
+  const ai = convertMrs("ai", ["overlap.test", "ai-only.test", ...aiServices], rulesetDirectory);
   const cn = convertMrs("cn", ["overlap.test", "cn-only.test"], rulesetDirectory);
   let ipv6Family;
   const target = await startHttpServer("::1", (request, response) => {
@@ -200,6 +201,9 @@ async function validateRuleOrderAndIpv6() {
       "RULE-SET,ads,AdBlock",
       "RULE-SET,ai,AI",
       "RULE-SET,cn,Domestic",
+      "DOMAIN,accounts.google.com,Google",
+      "DOMAIN,github.com,GitHub",
+      "DOMAIN,login.microsoftonline.com,Microsoft",
       "MATCH,DIRECT",
     ],
     hosts: {
@@ -207,6 +211,14 @@ async function validateRuleOrderAndIpv6() {
       "ai-only.test": "::1",
       "cn-only.test": "::1",
       "ipv6-only.test": "::1",
+      "chatgpt.com": "::1",
+      "claude.ai": "::1",
+      "gemini.google.com": "::1",
+      "copilot.microsoft.com": "::1",
+      "cursor.com": "::1",
+      "accounts.google.com": "::1",
+      "github.com": "::1",
+      "login.microsoftonline.com": "::1",
     },
   });
   const instance = startMihomo(home, config, apiPort);
@@ -216,19 +228,38 @@ async function validateRuleOrderAndIpv6() {
     const apiRules = await rulesResponse.json();
     assert(rulesResponse.ok && Array.isArray(apiRules.rules), "Mihomo /rules API did not return rules");
     assert(apiRules.rules.slice(0, 3).map((rule) => rule.payload).join(",") === "ads,ai,cn", "Mihomo API rule order differs from config");
+    const authGroups = {};
+    for (const group of ["Google", "GitHub", "Microsoft"]) {
+      const response = await fetch(`http://127.0.0.1:${apiPort}/proxies/${group}`);
+      authGroups[group] = await response.json();
+      assert(response.ok && authGroups[group].now === "AI", `${group} did not select AI through the API`);
+    }
 
     await proxyRequest(mixedPort, "overlap.test", targetPort).catch(() => "rejected");
     await proxyRequest(mixedPort, "ai-only.test", targetPort);
     await proxyRequest(mixedPort, "cn-only.test", targetPort);
+    for (const domain of aiServices) await proxyRequest(mixedPort, domain, targetPort);
+    for (const domain of ["accounts.google.com", "github.com", "login.microsoftonline.com"]) {
+      await proxyRequest(mixedPort, domain, targetPort);
+    }
     const ipv6Response = await proxyRequest(mixedPort, "ipv6-only.test", targetPort);
     await delay(300);
     const logs = instance.getLogs();
     assert(/overlap\.test.*match RuleSet\(ads\).*using AdBlock/u.test(logs), "overlap domain did not first match ads -> AdBlock");
     assert(/ai-only\.test.*match RuleSet\(ai\).*using AI/u.test(logs), "AI domain did not match ai -> AI");
     assert(/cn-only\.test.*match RuleSet\(cn\).*using Domestic/u.test(logs), "CN domain did not match cn -> Domestic");
+    for (const domain of aiServices) {
+      const escaped = domain.replaceAll(".", "\\.");
+      assert(new RegExp(`${escaped}.*match RuleSet\\(ai\\).*using AI`, "u").test(logs), `${domain} did not match ai -> AI`);
+    }
+    assert(/accounts\.google\.com.*match Domain.*using Google/u.test(logs), "Gemini authentication did not route through Google");
+    assert(/github\.com.*match Domain.*using GitHub/u.test(logs), "Copilot authentication did not route through GitHub");
+    assert(/login\.microsoftonline\.com.*match Domain.*using Microsoft/u.test(logs), "Microsoft authentication did not route through Microsoft");
     assert(ipv6Response.includes("ipv6-ok") && ipv6Family === "IPv6", "IPv6-only host did not use an IPv6 connection");
     record("mihomo-api-log", `${version.version ?? "Mihomo"} API order and runtime log matches verified`);
     record("provider-overlap", "ads wins over AI and CN for an intentionally overlapping domain");
+    record("ai-service-routing", `${aiServices.join(", ")} matched AI in Mihomo runtime logs`);
+    record("ai-auth-inheritance", "Google, GitHub, and Microsoft authentication groups inherited the AI exit");
     record("ipv6-loopback", "domain resolved only to ::1 and completed through an IPv6 socket");
   } finally {
     await stopMihomo(instance);

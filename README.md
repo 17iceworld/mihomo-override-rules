@@ -33,6 +33,8 @@ Auto, PROXY, AI, AdBlock, YouTube, Google, Telegram, GitHub, NonChina, Private, 
 
 Light routing covers direct/private traffic, custom direct domains, ads, AI, OpenAI, YouTube, Google, Telegram, GitHub/GitLab, China domain/IP, non-China domains, Google IP, Telegram IP, and final fallback.
 
+Google and GitHub default to the `AI` group so Gemini and Copilot authentication use the same selected exit as their AI service traffic. Full applies the same default to Microsoft for shared Copilot login endpoints. Existing profiles with `store-selected` may retain an older manual group selection; select `AI` once in those groups to opt into the shared exit.
+
 ### Full
 
 `mihomo-override_full.yaml` is built from:
@@ -189,7 +191,7 @@ https://raw.githubusercontent.com/<your-user>/<your-repo>/main/mihomo-override_f
 
 The checked cases live in `tests/cases.yaml` and target the full profile:
 
-- `chatgpt.com` and `cursor.com` -> `AI`
+- `chatgpt.com`, `claude.ai`, `gemini.google.com`, `copilot.microsoft.com`, and `cursor.com` -> `AI`
 - `apple.com.cn` -> `Apple CN`
 - `icloud.com` -> `Apple`
 - `microsoft.com` -> `Microsoft`

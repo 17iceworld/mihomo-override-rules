@@ -17,6 +17,7 @@
 - Full 配置中的 30 个远程 MRS 已经由 `gh-proxy.org` 实际下载，并逐个交给 Mihomo 解码；测试同时统计远程 domain provider 的精确重叠项，避免仅验证 HTTP 状态或文件扩展名。
 - provider 缓存已完成故障注入：首次在线下载生成缓存后关闭服务器，离线重启仍能加载缓存且记录刷新失败；在全新无缓存目录中下载失败会留下明确日志，受保护请求不会到达 DIRECT 测试目标。
 - IPv6-only 域名已映射为 `::1`，请求通过 Mihomo 到达仅监听 IPv6 的目标，服务端确认连接族为 IPv6。
+- ChatGPT、Claude、Gemini、Copilot 和 Cursor 已通过 Mihomo 真实连接日志确认命中 `AI`；Google、GitHub、Microsoft 策略组也通过 API 确认默认继承 `AI`，用于保持共享认证流量的出口一致。
 
 ## 性能参数结论
 

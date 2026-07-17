@@ -51,6 +51,7 @@ proxy-groups:
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/google.png?v=20260717
     proxies:
+      - "AI"
       - "PROXY"
       - "Auto"
   - name: "Telegram"
@@ -63,12 +64,14 @@ proxy-groups:
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/github.png?v=20260717
     proxies:
+      - "AI"
       - "PROXY"
       - "Auto"
   - name: "Microsoft"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/microsoft.png?v=20260717
     proxies:
+      - "AI"
       - DIRECT
       - "PROXY"
       - "Auto"
