@@ -13,6 +13,10 @@
 - 官方 Mihomo v1.19.28 已成功加载脱敏合并后的 Light 与 Full 配置；本机初始化分别约 9 ms 与 7 ms。
 - 删除了与 `cn-ip` MRS 重复的 `GEOIP,CN` 规则及依赖 MMDB 的 DNS fallback-filter，避免首次启动因 GeoIP 数据库下载失败而无法加载。
 - Bootstrap DNS 使用 IP 形式的 DoH/443；两个端点均完成 TLS 证书验证，避免依赖更容易被受限网络封锁的 DoT/853。
+- `npm run test:runtime` 已用 Mihomo v1.19.27、官方 v1.19.28 和 alpha-3b85577 完成运行时集成验证：通过 `/rules` API 核对规则顺序，并从真实连接日志确认广告、AI、国内三个重叠 provider 按首条规则命中。
+- Full 配置中的 30 个远程 MRS 已经由 `gh-proxy.org` 实际下载，并逐个交给 Mihomo 解码；测试同时统计远程 domain provider 的精确重叠项，避免仅验证 HTTP 状态或文件扩展名。
+- provider 缓存已完成故障注入：首次在线下载生成缓存后关闭服务器，离线重启仍能加载缓存且记录刷新失败；在全新无缓存目录中下载失败会留下明确日志，受保护请求不会到达 DIRECT 测试目标。
+- IPv6-only 域名已映射为 `::1`，请求通过 Mihomo 到达仅监听 IPv6 的目标，服务端确认连接族为 IPv6。
 
 ## 性能参数结论
 
@@ -21,4 +25,4 @@
 
 ## 尚需跨平台实测
 
-macOS、Windows、Linux 的 TUN、系统 DNS、IPv6、WebRTC、休眠切网、防火墙、真实吞吐与资源占用无法由当前单机静态测试证明。执行 `tests/CROSS_PLATFORM_TESTS.zh-CN.md` 的矩阵后，将平台结果补充到本节；任何平台超过 10% 中位数退化或发生泄漏均不得发布。
+macOS 本机的隔离代理、provider 和 IPv6 回环路径已自动验证，但这不等同于公网纯 IPv6、TUN 或其他操作系统。Windows/Linux TUN、运营商公网 IPv6、系统 DNS、WebRTC、休眠切网、防火墙、真实吞吐与资源占用仍需执行 `tests/CROSS_PLATFORM_TESTS.zh-CN.md` 的设备矩阵；任何平台超过 10% 中位数退化或发生泄漏均不得发布。

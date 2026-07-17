@@ -29,5 +29,6 @@
 ## 当前自动验证与实测边界
 
 - `npm test`：构建一致性、规则/组引用、循环、重复规则、MATCH 顺序、IP `no-resolve`、DNS 出口和脱敏订阅兼容性。
+- `npm run test:runtime`：远程 MRS 下载与 Mihomo 解码、远程 provider 重叠审计、API/日志首条命中、缓存在线/离线故障注入、无缓存禁止 DIRECT，以及本机 IPv6-only 回环连接。
 - `npm run audit:subscription -- /path/to/file.yaml`：只读检查真实订阅与项目覆写的结构兼容性，不显示节点值。
-- DNS 泄漏、WebRTC、系统防火墙、TUN 切网、吞吐、CPU 与内存必须在三平台人工或 CI 主机上实测。
+- 公网 IPv6、DNS 泄漏、WebRTC、系统防火墙、TUN 切网、吞吐、CPU 与内存必须在三平台人工或 CI 主机上实测；IPv6 回环通过不能替代运营商纯 IPv6 网络。

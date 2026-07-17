@@ -133,6 +133,14 @@ Supported values are `direct`, `gh-proxy`, and `jsdelivr`. Use the same value wi
 - cases in `tests/cases.yaml` match rules in the full profile
 - inline-domain cases resolve to the expected first matching inline provider and outbound
 
+Run the networked Mihomo integration suite separately:
+
+```bash
+npm run test:runtime
+```
+
+It discovers Mihomo from `MIHOMO_BIN`, the Clash Party sidecar, or `PATH`, then verifies that every remote MRS in the full profile downloads through the configured mirror and decodes with Mihomo. It also starts isolated Mihomo instances to check `/rules` API order, runtime match logs, intentionally overlapping providers, IPv6-only loopback traffic, cached-provider offline restart, and a no-cache download failure that must not reach a DIRECT target. The suite needs network access and an installed Mihomo binary.
+
 It also runs a compatibility audit against a credential-free three-node fixture. To audit a real subscription without modifying or printing its nodes:
 
 ```bash

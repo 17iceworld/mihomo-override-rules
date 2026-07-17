@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node scripts/build-override.js",
     "test": "npm run build -- --check && node scripts/audit-subscription.js tests/fixtures/subscription.yaml",
+    "test:runtime": "node scripts/runtime-integration.js",
     "audit:subscription": "node scripts/audit-subscription.js",
     "benchmark": "node scripts/benchmark.js",
     "benchmark:compare": "node scripts/compare-benchmarks.js"
