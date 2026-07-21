@@ -195,6 +195,12 @@ rule-providers:
       - "203.0.113.0/24"
       - "224.0.0.0/4"
       - "240.0.0.0/4"
+      - "::/128"
+      - "::1/128"
+      - "2001:db8::/32"
+      - "fc00::/7"
+      - "fe80::/10"
+      - "ff00::/8"
   direct-cn-domain:
     type: inline
     behavior: domain
@@ -374,8 +380,8 @@ rules:
   - RULE-SET,telegram,Telegram
   - RULE-SET,github,GitHub
   - RULE-SET,gitlab,GitHub
-  - RULE-SET,geolocation-cn,Domestic
   - RULE-SET,cn-domain,Domestic
+  - RULE-SET,geolocation-cn,Domestic
   - RULE-SET,cn-ip,Domestic,no-resolve
   - RULE-SET,geolocation-!cn,NonChina
   - RULE-SET,google-ip,Google,no-resolve

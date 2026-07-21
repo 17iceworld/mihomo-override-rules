@@ -77,6 +77,9 @@ dns:
     "rule-set:private-domain":
       - https://dns.alidns.com/dns-query#DIRECT
       - https://doh.pub/dns-query#DIRECT
+    "rule-set:apple-cn-domain":
+      - https://dns.alidns.com/dns-query#DIRECT
+      - https://doh.pub/dns-query#DIRECT
     "rule-set:direct-cn-domain":
       - https://dns.alidns.com/dns-query#DIRECT
       - https://doh.pub/dns-query#DIRECT
@@ -92,12 +95,6 @@ dns:
     "rule-set:apple-cn":
       - https://dns.alidns.com/dns-query#DIRECT
       - https://doh.pub/dns-query#DIRECT
-    "rule-set:microsoft":
-      - https://dns.alidns.com/dns-query#DIRECT
-      - https://doh.pub/dns-query#DIRECT
-    "rule-set:onedrive":
-      - https://dns.alidns.com/dns-query#DIRECT
-      - https://doh.pub/dns-query#DIRECT
     "rule-set:ai-domain":
       - https://cloudflare-dns.com/dns-query#PROXY
       - https://dns.google/dns-query#PROXY
@@ -110,6 +107,12 @@ dns:
     "rule-set:anthropic":
       - https://cloudflare-dns.com/dns-query#PROXY
       - https://dns.google/dns-query#PROXY
+    "rule-set:microsoft":
+      - https://dns.alidns.com/dns-query#DIRECT
+      - https://doh.pub/dns-query#DIRECT
+    "rule-set:onedrive":
+      - https://dns.alidns.com/dns-query#DIRECT
+      - https://doh.pub/dns-query#DIRECT
     "rule-set:apple":
       - https://cloudflare-dns.com/dns-query#PROXY
       - https://dns.google/dns-query#PROXY
