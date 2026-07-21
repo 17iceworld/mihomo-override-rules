@@ -59,7 +59,7 @@ function ruleProviderBlocks(output) {
   let currentBlock = [];
 
   for (const line of providersSection.split("\n")) {
-    const providerMatch = line.match(/^  ([^:\n]+):$/u);
+    const providerMatch = line.match(/^  (\S[^:\n]*):$/u);
     if (providerMatch) {
       if (currentProvider) {
         blocks.set(currentProvider, `${currentBlock.join("\n")}\n`);
@@ -256,11 +256,26 @@ function validateDnsPolicies(output, profileName) {
       throw new Error(`${profileName}: direct-cn-domain must not use Cloudflare DNS providers`);
     }
 
-    const domestic = new Set(["private-domain", "direct-cn-domain", "cn-domain", "geolocation-cn", "apple-cn", "microsoft", "onedrive"]);
+    const domestic = new Set(["private-domain", "apple-cn-domain", "direct-cn-domain", "cn-domain", "geolocation-cn", "apple-cn", "microsoft", "onedrive"]);
     const routes = [...policy.matchAll(/^      - (.+)$/gmu)].map((match) => match[1]);
     const requiredRoute = domestic.has(provider) ? "#DIRECT" : "#PROXY";
     if (routes.some((route) => !route.endsWith(requiredRoute))) {
       throw new Error(`${profileName}: DNS policy ${provider} must use ${requiredRoute}`);
+    }
+  }
+
+  const dnsPolicyOrder = [...output.matchAll(/^    "rule-set:([^"]+)":/gmu)]
+    .map((match) => match[1]);
+  for (const aiProvider of ["ai-domain", "category-ai-!cn", "openai", "anthropic"]) {
+    const aiIndex = dnsPolicyOrder.indexOf(aiProvider);
+    if (aiIndex < 0) continue;
+    for (const microsoftProvider of ["microsoft", "onedrive"]) {
+      const microsoftIndex = dnsPolicyOrder.indexOf(microsoftProvider);
+      if (microsoftIndex >= 0 && aiIndex > microsoftIndex) {
+        throw new Error(
+          `${profileName}: DNS policy ${aiProvider} must precede ${microsoftProvider} so overlapping AI domains use #PROXY`,
+        );
+      }
     }
   }
 
@@ -294,6 +309,13 @@ function validateDnsPolicies(output, profileName) {
     const block = output.match(new RegExp(`^  ${key}:\\n((?:    - .+\\n)+)`, "mu"))?.[1] ?? "";
     if (!block || [...block.matchAll(/^    - (.+)$/gmu)].some((match) => !match[1].endsWith("#DIRECT"))) {
       throw new Error(`${profileName}: ${key} must explicitly use #DIRECT`);
+    }
+  }
+
+  const privateIpBlock = providerBlocks.get("private-ip") ?? "";
+  for (const cidr of ["::/128", "::1/128", "2001:db8::/32", "fc00::/7", "fe80::/10", "ff00::/8"]) {
+    if (!privateIpBlock.includes(`- "${cidr}"`)) {
+      throw new Error(`${profileName}: inline private-ip is missing IPv6 fallback range ${cidr}`);
     }
   }
 }

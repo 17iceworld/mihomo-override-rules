@@ -79,6 +79,9 @@ dns:
     "rule-set:private-domain":
       - https://dns.alidns.com/dns-query#DIRECT
       - https://doh.pub/dns-query#DIRECT
+    "rule-set:apple-cn-domain":
+      - https://dns.alidns.com/dns-query#DIRECT
+      - https://doh.pub/dns-query#DIRECT
     "rule-set:direct-cn-domain":
       - https://dns.alidns.com/dns-query#DIRECT
       - https://doh.pub/dns-query#DIRECT
@@ -94,12 +97,6 @@ dns:
     "rule-set:apple-cn":
       - https://dns.alidns.com/dns-query#DIRECT
       - https://doh.pub/dns-query#DIRECT
-    "rule-set:microsoft":
-      - https://dns.alidns.com/dns-query#DIRECT
-      - https://doh.pub/dns-query#DIRECT
-    "rule-set:onedrive":
-      - https://dns.alidns.com/dns-query#DIRECT
-      - https://doh.pub/dns-query#DIRECT
     "rule-set:ai-domain":
       - https://cloudflare-dns.com/dns-query#PROXY
       - https://dns.google/dns-query#PROXY
@@ -112,6 +109,12 @@ dns:
     "rule-set:anthropic":
       - https://cloudflare-dns.com/dns-query#PROXY
       - https://dns.google/dns-query#PROXY
+    "rule-set:microsoft":
+      - https://dns.alidns.com/dns-query#DIRECT
+      - https://doh.pub/dns-query#DIRECT
+    "rule-set:onedrive":
+      - https://dns.alidns.com/dns-query#DIRECT
+      - https://doh.pub/dns-query#DIRECT
     "rule-set:apple":
       - https://cloudflare-dns.com/dns-query#PROXY
       - https://dns.google/dns-query#PROXY
@@ -334,6 +337,17 @@ rule-providers:
       - "203.0.113.0/24"
       - "224.0.0.0/4"
       - "240.0.0.0/4"
+      - "::/128"
+      - "::1/128"
+      - "2001:db8::/32"
+      - "fc00::/7"
+      - "fe80::/10"
+      - "ff00::/8"
+  apple-cn-domain:
+    type: inline
+    behavior: domain
+    payload:
+      - ".apple.com.cn"
   direct-cn-domain:
     type: inline
     behavior: domain
@@ -645,6 +659,7 @@ rules:
   - RULE-SET,private-ip,DIRECT,no-resolve
   - RULE-SET,private,Private,no-resolve
   - RULE-SET,direct-global-domain,DIRECT
+  - RULE-SET,apple-cn-domain,Apple CN
   - RULE-SET,direct-cn-domain,DIRECT
   - RULE-SET,category-ads-all,AdBlock
   - RULE-SET,ai-domain,AI
@@ -667,14 +682,14 @@ rules:
   - RULE-SET,instagram,Instagram
   - RULE-SET,reddit-domain,Reddit
   - RULE-SET,reddit,Reddit
-  - RULE-SET,category-games,Game
   - RULE-SET,steam,Game
   - RULE-SET,epicgames,Game
   - RULE-SET,xbox,Game
   - RULE-SET,playstation,Game
   - RULE-SET,nintendo,Game
-  - RULE-SET,geolocation-cn,Domestic
+  - RULE-SET,category-games,Game
   - RULE-SET,cn-domain,Domestic
+  - RULE-SET,geolocation-cn,Domestic
   - RULE-SET,cn-ip,Domestic,no-resolve
   - RULE-SET,geolocation-!cn,NonChina
   - RULE-SET,google-ip,Google,no-resolve

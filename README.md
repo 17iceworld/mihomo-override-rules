@@ -9,7 +9,7 @@ Modular Mihomo override rules for Sparkle. This repository keeps routing, DNS po
   - `mihomo-override_full.yaml`: expanded profile with Apple CN/Global, Microsoft/OneDrive, TikTok, X/Twitter, Instagram, Reddit, Game, and extra AI routing.
 - Clean strategy group names such as `PROXY`, `Auto`, `AI`, `AdBlock`, `Domestic`, and `Final`.
 - PNG proxy group icons from `icons/`, referenced through GitHub raw URLs.
-- Inline custom domain rules under `rules/` for AI, direct CN, direct global, X, Instagram, and Reddit.
+- Inline custom domain rules under `rules/` for AI, Apple CN, direct CN, direct global, X, Instagram, and Reddit.
 - Remote MetaCubeX MRS rule providers for common services, China geosite/geoip, private IP, ads, and game platforms.
 - DNS policy using `fake-ip`, AliDNS/DNSPod DoH for domestic rules, and Cloudflare DoH for proxied or global rules.
 - Explicitly closed LAN access and routed DNS transports (`#DIRECT` for domestic/bootstrap traffic and `#PROXY` for global queries).
@@ -91,6 +91,7 @@ Full also adds rule providers for `anthropic`, `apple-cn`, `apple`, `microsoft`,
 │   └── rules.yaml
 ├── rules/
 │   ├── ai.yaml
+│   ├── apple-cn.yaml
 │   ├── direct-cn.yaml
 │   ├── direct-global.yaml
 │   ├── instagram.yaml
@@ -132,7 +133,7 @@ Supported values are `direct`, `gh-proxy`, and `jsdelivr`. Use the same value wi
 - proxy groups have no unknown references or dependency cycles
 - rules contain no duplicates, end in exactly one `MATCH`, and IP rules use `no-resolve`
 - encrypted DNS bootstrap, closed LAN access, and explicit domestic/global DNS routes
-- cases in `tests/cases.yaml` match rules in the full profile
+- cases in `tests/cases.yaml` reference valid rules in the full profile
 - inline-domain cases resolve to the expected first matching inline provider and outbound
 
 Run the networked Mihomo integration suite separately:
@@ -141,7 +142,7 @@ Run the networked Mihomo integration suite separately:
 npm run test:runtime
 ```
 
-It discovers Mihomo from `MIHOMO_BIN`, the Clash Party sidecar, or `PATH`, then verifies that every remote MRS in the full profile downloads through the configured mirror and decodes with Mihomo. It also starts isolated Mihomo instances to check `/rules` API order, runtime match logs, intentionally overlapping providers, IPv6-only loopback traffic, cached-provider offline restart, and a no-cache download failure that must not reach a DIRECT target. The suite needs network access and an installed Mihomo binary.
+It discovers Mihomo from `MIHOMO_BIN`, the Clash Party sidecar, or `PATH`, then verifies that every remote MRS in the full profile downloads through the configured mirror and decodes with Mihomo. After decoding, every case in `tests/cases.yaml` must match its expected first inline or remote provider. The suite also starts isolated Mihomo instances to check `/rules` API order, runtime match logs, intentionally overlapping providers, IPv6-only loopback traffic, cached-provider offline restart, and a no-cache download failure that must not reach a DIRECT target. The suite needs network access and an installed Mihomo binary.
 
 It also runs a compatibility audit against a credential-free three-node fixture. To audit a real subscription without modifying or printing its nodes:
 
@@ -218,10 +219,10 @@ Additional manual checks:
 
 Routing is intentionally ordered from specific to broad:
 
-1. private and direct custom rules
+1. private and explicit custom exceptions
 2. ad blocking
 3. service-specific rules
-4. China domain/IP rules
+4. broad China domain/IP rules
 5. non-China domain rules
 6. Google and Telegram IP rules
 7. final fallback

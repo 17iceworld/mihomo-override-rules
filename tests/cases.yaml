@@ -15,7 +15,7 @@ cases:
     provider: "ai-domain"
     outbound: "AI"
   - domain: "apple.com.cn"
-    provider: "apple-cn"
+    provider: "apple-cn-domain"
     outbound: "Apple CN"
   - domain: "icloud.com"
     provider: "apple"

@@ -134,16 +134,24 @@ async function validateRemoteMrs() {
   const override = readFileSync(join(root, "mihomo-override_full.yaml"), "utf8");
   const blocks = override.match(/^rule-providers:\n([\s\S]*?)^rules:/mu)?.[1] ?? "";
   const providers = [];
+  const providerPatterns = new Map();
   let current;
   for (const line of blocks.split("\n")) {
-    const name = line.match(/^  ([^:]+):$/u)?.[1];
+    const name = line.match(/^  (\S[^:]*):$/u)?.[1];
     if (name) {
-      current = { name };
+      current = { name, patterns: [] };
       providers.push(current);
     } else if (current) {
       current.behavior ??= line.match(/^    behavior: (domain|ipcidr)$/u)?.[1];
       current.url ??= line.match(/^    url: (https?:\/\/.+)$/u)?.[1];
       current.format ??= line.match(/^    format: (\S+)$/u)?.[1];
+      const inlinePattern = line.match(/^      - "([^"]+)"$/u)?.[1];
+      if (inlinePattern) current.patterns.push(inlinePattern);
+    }
+  }
+  for (const provider of providers) {
+    if (provider.behavior === "domain" && provider.patterns.length > 0) {
+      providerPatterns.set(provider.name, provider.patterns);
     }
   }
   const remote = providers.filter((provider) => provider.url && provider.format === "mrs");
@@ -161,7 +169,9 @@ async function validateRemoteMrs() {
     const decoded = readFileSync(output, "utf8").trim();
     assert(decoded.length > 0 && decoded.split("\n").every((line) => line.trim().length > 0), `${provider.name} did not decode as MRS`);
     if (provider.behavior === "domain") {
-      for (const pattern of decoded.split("\n")) {
+      const patterns = decoded.split("\n");
+      providerPatterns.set(provider.name, patterns);
+      for (const pattern of patterns) {
         const owners = domainOwners.get(pattern) ?? new Set();
         owners.add(provider.name);
         domainOwners.set(pattern, owners);
@@ -170,8 +180,40 @@ async function validateRemoteMrs() {
   }
   const overlaps = [...domainOwners.values()].filter((owners) => owners.size > 1);
   assert(overlaps.length > 0, "no overlap was found across downloaded domain providers");
+
+  function domainMatches(pattern, domain) {
+    if (pattern.startsWith("regexp:")) return new RegExp(pattern.slice(7), "u").test(domain);
+    if (pattern.startsWith("keyword:")) return domain.includes(pattern.slice(8));
+    if (pattern.startsWith("*.")) return domain.endsWith(pattern.slice(1)) && domain !== pattern.slice(2);
+    if (pattern.startsWith("+.") || pattern.startsWith(".")) {
+      const suffix = pattern.startsWith("+.") ? pattern.slice(2) : pattern.slice(1);
+      return domain === suffix || domain.endsWith(`.${suffix}`);
+    }
+    return domain === pattern;
+  }
+
+  const orderedProviders = [...override.matchAll(/^  - RULE-SET,([^,]+),([^,\n]+)/gmu)]
+    .map((match) => ({ provider: match[1], outbound: match[2] }));
+  const casesSource = readFileSync(join(root, "tests/cases.yaml"), "utf8");
+  let checkedCases = 0;
+  for (const block of casesSource.split(/\n(?=  - domain: )/u)) {
+    const domain = block.match(/domain: "([^"]+)"/u)?.[1];
+    const expectedProvider = block.match(/provider: "([^"]+)"/u)?.[1];
+    const expectedOutbound = block.match(/outbound: "([^"]+)"/u)?.[1];
+    if (!domain || !expectedProvider || !expectedOutbound) continue;
+    const firstMatch = orderedProviders.find(({ provider }) =>
+      (providerPatterns.get(provider) ?? []).some((pattern) => domainMatches(pattern, domain))
+    );
+    assert(firstMatch, `${domain} did not match any downloaded or inline domain provider`);
+    assert(
+      firstMatch.provider === expectedProvider && firstMatch.outbound === expectedOutbound,
+      `${domain} first matched ${firstMatch.provider} -> ${firstMatch.outbound}, expected ${expectedProvider} -> ${expectedOutbound}`,
+    );
+    checkedCases += 1;
+  }
   record("remote-mrs", `${remote.length} gh-proxy providers downloaded and decoded by Mihomo`);
   record("remote-overlap-audit", `${overlaps.length} exact domain patterns occur in more than one remote provider`);
+  record("full-profile-cases", `${checkedCases} domains matched the first expected inline or downloaded provider`);
 }
 
 async function validateRuleOrderAndIpv6() {
