@@ -3,6 +3,7 @@ import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync, existsSync
 import { tmpdir } from "node:os";
 import { delimiter, join } from "node:path";
 import { spawn, spawnSync } from "node:child_process";
+import { createSocket } from "node:dgram";
 import { createConnection } from "node:net";
 import { fileURLToPath } from "node:url";
 
@@ -54,6 +55,17 @@ function freePort(host = "127.0.0.1") {
   });
 }
 
+function freeUdpPort(host = "127.0.0.1") {
+  return new Promise((resolve, reject) => {
+    const socket = createSocket("udp4");
+    socket.once("error", reject);
+    socket.bind(0, host, () => {
+      const { port } = socket.address();
+      socket.close(() => resolve(port));
+    });
+  });
+}
+
 function startHttpServer(host, handler) {
   return new Promise((resolve, reject) => {
     const server = createServer(handler);
@@ -64,6 +76,88 @@ function startHttpServer(host, handler) {
 
 function closeServer(server) {
   return new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+}
+
+function decodeDnsQuestion(message) {
+  const labels = [];
+  let offset = 12;
+  while (offset < message.length && message[offset] !== 0) {
+    const length = message[offset];
+    labels.push(message.subarray(offset + 1, offset + 1 + length).toString("ascii"));
+    offset += length + 1;
+  }
+  if (offset + 5 > message.length) throw new Error("Malformed DNS question");
+  return { domain: labels.join("."), questionEnd: offset + 5 };
+}
+
+function startDnsServer() {
+  return new Promise((resolve, reject) => {
+    const socket = createSocket("udp4");
+    const queries = [];
+    socket.once("error", reject);
+    socket.on("message", (message, remote) => {
+      const { domain, questionEnd } = decodeDnsQuestion(message);
+      queries.push(domain);
+      const header = Buffer.alloc(12);
+      message.copy(header, 0, 0, 2);
+      header.writeUInt16BE(0x8180, 2);
+      header.writeUInt16BE(1, 4);
+      header.writeUInt16BE(1, 6);
+      const answer = Buffer.from([
+        0xc0, 0x0c,
+        0x00, 0x01,
+        0x00, 0x01,
+        0x00, 0x00, 0x00, 0x3c,
+        0x00, 0x04,
+        127, 0, 0, 1,
+      ]);
+      socket.send(Buffer.concat([header, message.subarray(12, questionEnd), answer]), remote.port, remote.address);
+    });
+    socket.bind(0, "127.0.0.1", () => resolve({
+      socket,
+      port: socket.address().port,
+      queries,
+    }));
+  });
+}
+
+function closeDnsServer(server) {
+  return new Promise((resolve) => server.socket.close(resolve));
+}
+
+function dnsQuery(port, domain, timeout = 3000) {
+  return new Promise((resolve, reject) => {
+    const socket = createSocket("udp4");
+    const id = Math.floor(Math.random() * 0xffff);
+    const labels = domain.split(".").map((label) => {
+      const bytes = Buffer.from(label, "ascii");
+      return Buffer.concat([Buffer.from([bytes.length]), bytes]);
+    });
+    const header = Buffer.alloc(12);
+    header.writeUInt16BE(id, 0);
+    header.writeUInt16BE(0x0100, 2);
+    header.writeUInt16BE(1, 4);
+    const question = Buffer.concat([
+      ...labels,
+      Buffer.from([0x00, 0x00, 0x01, 0x00, 0x01]),
+    ]);
+    const timer = setTimeout(() => socket.close(() => reject(new Error(`DNS query for ${domain} timed out`))), timeout);
+    socket.once("error", (error) => {
+      clearTimeout(timer);
+      socket.close(() => reject(error));
+    });
+    socket.once("message", (message) => {
+      clearTimeout(timer);
+      socket.close(() => {
+        if (message.readUInt16BE(0) !== id || message.readUInt16BE(6) < 1) {
+          reject(new Error(`DNS query for ${domain} returned an invalid response`));
+        } else {
+          resolve();
+        }
+      });
+    });
+    socket.send(Buffer.concat([header, question]), port, "127.0.0.1");
+  });
 }
 
 async function waitForApi(port, process, timeout = 10000) {
@@ -309,6 +403,91 @@ async function validateRuleOrderAndIpv6() {
   }
 }
 
+async function validateDnsPolicyRouting() {
+  const directDns = await startDnsServer();
+  const proxyDns = await startDnsServer();
+  const dnsPort = await freeUdpPort();
+  const apiPort = await freePort();
+  const home = join(tempRoot, "dns-policy-routing");
+  const directUrl = `udp://127.0.0.1:${directDns.port}#DIRECT`;
+  const proxyUrl = `udp://127.0.0.1:${proxyDns.port}#PROXY`;
+  const config = `external-controller: 127.0.0.1:${apiPort}
+log-level: debug
+mode: rule
+proxy-groups:
+  - name: PROXY
+    type: select
+    proxies: [DIRECT]
+rule-providers:
+  ai:
+    type: inline
+    behavior: domain
+    payload:
+      - "+.copilot.microsoft.com"
+  microsoft:
+    type: inline
+    behavior: domain
+    payload:
+      - "+.microsoft.com"
+  onedrive:
+    type: inline
+    behavior: domain
+    payload:
+      - "+.onedrive.live.com"
+dns:
+  enable: true
+  listen: 127.0.0.1:${dnsPort}
+  enhanced-mode: redir-host
+  prefer-h3: false
+  respect-rules: true
+  default-nameserver:
+    - ${directUrl}
+  proxy-server-nameserver:
+    - ${directUrl}
+  nameserver:
+    - ${proxyUrl}
+  nameserver-policy:
+    "rule-set:ai":
+      - ${proxyUrl}
+    "rule-set:microsoft":
+      - ${directUrl}
+    "rule-set:onedrive":
+      - ${directUrl}
+rules:
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+  - RULE-SET,ai,PROXY
+  - RULE-SET,microsoft,PROXY
+  - RULE-SET,onedrive,PROXY
+  - MATCH,PROXY
+`;
+  const instance = startMihomo(home, config, apiPort);
+  try {
+    await instance.ready();
+    for (const domain of ["microsoft.com", "onedrive.live.com", "copilot.microsoft.com", "example.net"]) {
+      await dnsQuery(dnsPort, domain);
+    }
+    await delay(200);
+    const directExpected = ["microsoft.com", "onedrive.live.com"];
+    const proxyExpected = ["copilot.microsoft.com", "example.net"];
+    for (const domain of directExpected) {
+      assert(directDns.queries.includes(domain), `${domain} did not use the direct DNS policy`);
+      assert(!proxyDns.queries.includes(domain), `${domain} unexpectedly reached the proxy DNS policy`);
+    }
+    for (const domain of proxyExpected) {
+      assert(proxyDns.queries.includes(domain), `${domain} did not use the proxy DNS policy`);
+      assert(!directDns.queries.includes(domain), `${domain} unexpectedly reached the direct DNS policy`);
+    }
+    record(
+      "dns-policy-routing",
+      "Microsoft and OneDrive used direct DNS; Copilot overlap and default global queries used proxy DNS",
+    );
+  } finally {
+    await stopMihomo(instance);
+    await closeDnsServer(directDns);
+    await closeDnsServer(proxyDns);
+  }
+}
+
 async function validateProviderCache() {
   const cachedMrs = readFileSync(convertMrs("cached-source", ["cached.test"]));
   let providerRequests = 0;
@@ -402,6 +581,7 @@ try {
   console.log(`Using ${version}`);
   await validateRemoteMrs();
   await validateRuleOrderAndIpv6();
+  await validateDnsPolicyRouting();
   await validateProviderCache();
   console.log(`Runtime integration passed (${results.length} checks)`);
 } catch (error) {

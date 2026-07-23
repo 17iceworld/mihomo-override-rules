@@ -11,8 +11,9 @@ Modular Mihomo override rules for Sparkle. This repository keeps routing, DNS po
 - PNG proxy group icons from `icons/`, referenced through GitHub raw URLs.
 - Inline custom domain rules under `rules/` for AI, Apple CN, direct CN, direct global, X, Instagram, and Reddit.
 - Remote MetaCubeX MRS rule providers for common services, China geosite/geoip, private IP, ads, and game platforms.
-- DNS policy using `fake-ip`, AliDNS/DNSPod DoH for domestic rules, and Cloudflare DoH for proxied or global rules.
-- Explicitly closed LAN access and routed DNS transports (`#DIRECT` for domestic/bootstrap traffic and `#PROXY` for global queries).
+- Process-aware Parsec routing: private and mainland China peer IPs use `DIRECT`, all other Parsec traffic uses `PROXY`, and Parsec STUN remains direct for P2P negotiation.
+- DNS policy using `fake-ip`, AliDNS/DNSPod DoH for private, China, Apple CN, and general Microsoft/OneDrive rules, and Cloudflare/Google DoH for AI and other proxied or global rules.
+- Explicitly closed LAN access and routed DNS transports (`#DIRECT` for bootstrap and direct-DNS exceptions, and `#PROXY` for AI and other global queries). AI DNS policies precede Microsoft/OneDrive so overlapping services such as Copilot keep using proxy DNS.
 
 ## Profile Differences
 
@@ -129,10 +130,12 @@ Supported values are `direct`, `gh-proxy`, and `jsdelivr`. Use the same value wi
 - HTTP rule providers include required fields
 - generated rule-provider URLs do not use unproxied raw GitHub URLs
 - DNS `rule-set:` policies reference existing providers
+- Microsoft/OneDrive DNS exceptions use `#DIRECT`, while higher-priority overlapping AI policies use `#PROXY`
 - generated overrides are current and check mode never rewrites them
 - proxy groups have no unknown references or dependency cycles
 - rules contain no duplicates, end in exactly one `MATCH`, and IP rules use `no-resolve`
-- encrypted DNS bootstrap, closed LAN access, and explicit domestic/global DNS routes
+- Parsec process rules enter an ordered private/CN-IP/direct-else-proxy sub-rule, while only its STUN endpoints receive unconditional direct exceptions
+- encrypted DNS bootstrap, closed LAN access, and explicit direct-exception/proxy DNS routes
 - cases in `tests/cases.yaml` reference valid rules in the full profile
 - inline-domain cases resolve to the expected first matching inline provider and outbound
 
@@ -203,6 +206,7 @@ The checked cases live in `tests/cases.yaml` and target the full profile:
 - `store.steampowered.com` -> `Game`
 - `baidu.com` -> `Domestic`
 - `dogni.work` -> `DIRECT`
+- `stun.parsec.app` and `stun6.parsec.app` -> `DIRECT`
 - `example.cn` -> `DIRECT`
 
 Additional manual checks:
@@ -213,19 +217,20 @@ Additional manual checks:
 - `github.com` and `gitlab.com` -> `GitHub`
 - geolocation non-China domains -> `NonChina`
 - domains from MetaCubeX `category-ads-all` -> `AdBlock`
-- foreign DNS leak tests should not show the local ISP DNS; domestic domains may resolve through AliDNS or DNSPod DoH
+- AI and other global DNS leak tests should not show the local ISP DNS; private, China, Apple CN, and general Microsoft/OneDrive domains may resolve through AliDNS or DNSPod DoH
 
 ## Rule Order
 
 Routing is intentionally ordered from specific to broad:
 
 1. private and explicit custom exceptions
-2. ad blocking
-3. service-specific rules
-4. broad China domain/IP rules
-5. non-China domain rules
-6. Google and Telegram IP rules
-7. final fallback
+2. Parsec process routing by private/China/other destination IP
+3. ad blocking
+4. service-specific rules
+5. broad China domain/IP rules
+6. non-China domain rules
+7. Google and Telegram IP rules
+8. final fallback
 
 Put allow/direct exceptions before broad remote rule providers if a site is overmatched.
 

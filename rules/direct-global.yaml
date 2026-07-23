@@ -4,3 +4,5 @@ payload:
   - "*.lan"
   - "*.home.arpa"
   - ".dogni.work"
+  - "stun.parsec.app"
+  - "stun6.parsec.app"

@@ -3,6 +3,7 @@
 allow-lan: false
 ipv6: true
 mode: rule
+find-process-mode: strict
 profile:
   store-selected: true
   store-fake-ip: true
@@ -215,6 +216,8 @@ rule-providers:
       - "*.lan"
       - "*.home.arpa"
       - ".dogni.work"
+      - "stun.parsec.app"
+      - "stun6.parsec.app"
   ai-domain:
     type: inline
     behavior: domain
@@ -365,11 +368,19 @@ rule-providers:
     path-in-bundle: geo/geoip/cn.mrs
     interval: 86400
 
+sub-rules:
+  parsec-routing:
+    - RULE-SET,private-ip,DIRECT,no-resolve
+    - RULE-SET,cn-ip,DIRECT,no-resolve
+    - MATCH,PROXY
 rules:
   - RULE-SET,private-domain,DIRECT
   - RULE-SET,private-ip,DIRECT,no-resolve
   - RULE-SET,private,Private,no-resolve
   - RULE-SET,direct-global-domain,DIRECT
+  - SUB-RULE,(PROCESS-NAME,parsecd.exe),parsec-routing
+  - SUB-RULE,(PROCESS-NAME,pservice.exe),parsec-routing
+  - SUB-RULE,(PROCESS-NAME,parsecd),parsec-routing
   - RULE-SET,direct-cn-domain,DIRECT
   - RULE-SET,category-ads-all,AdBlock
   - RULE-SET,ai-domain,AI

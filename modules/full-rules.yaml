@@ -1,8 +1,16 @@
+sub-rules:
+  parsec-routing:
+    - RULE-SET,private-ip,DIRECT,no-resolve
+    - RULE-SET,cn-ip,DIRECT,no-resolve
+    - MATCH,PROXY
 rules:
   - RULE-SET,private-domain,DIRECT
   - RULE-SET,private-ip,DIRECT,no-resolve
   - RULE-SET,private,Private,no-resolve
   - RULE-SET,direct-global-domain,DIRECT
+  - SUB-RULE,(PROCESS-NAME,parsecd.exe),parsec-routing
+  - SUB-RULE,(PROCESS-NAME,pservice.exe),parsec-routing
+  - SUB-RULE,(PROCESS-NAME,parsecd),parsec-routing
   - RULE-SET,apple-cn-domain,Apple CN
   - RULE-SET,direct-cn-domain,DIRECT
   - RULE-SET,category-ads-all,AdBlock
