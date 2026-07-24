@@ -65,6 +65,7 @@ Full also adds rule providers for `anthropic`, `apple-cn`, `apple`, `microsoft`,
 ├── icons/
 │   ├── adblock.png
 │   ├── ai.png
+│   ├── anime1.png
 │   ├── apple-cn.png
 │   ├── apple.png
 │   ├── auto.png
@@ -107,6 +108,8 @@ Full also adds rule providers for `anthropic`, `apple-cn`, `apple`, `microsoft`,
 │   └── cases.yaml
 └── package.json
 ```
+
+`icons/anime1.png` is a 128×128 derivative of the transparent 260×260 site image published by Anime1 at `https://sta.anicdn.com/logo/260x260.png`.
 
 ## Build And Test
 
