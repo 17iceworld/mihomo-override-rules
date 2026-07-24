@@ -203,6 +203,72 @@ async function stopMihomo(instance) {
   ]);
 }
 
+async function validateAnime1NodeFiltering() {
+  const home = join(tempRoot, "anime1-node-filtering");
+  const apiPort = await freePort();
+  const japaneseNodes = [
+    "JP-01",
+    "JPN Premium",
+    "Japan 01",
+    "🇯🇵 Tokyo",
+    "日本",
+    "大阪-01",
+    "Nagoya 01",
+    "Fukuoka 01",
+    "Sapporo 01",
+    "Okinawa 01",
+  ];
+  const nonJapaneseNodes = [
+    "HK-01",
+    "TW 台灣",
+    "SG Singapore",
+    "US Los Angeles",
+  ];
+  const proxies = [...japaneseNodes, ...nonJapaneseNodes]
+    .map((name, index) => `  - name: "${name}"\n    type: http\n    server: 192.0.2.${index + 1}\n    port: 443`)
+    .join("\n");
+  const config = `external-controller: 127.0.0.1:${apiPort}
+log-level: warning
+mode: rule
+proxies:
+${proxies}
+proxy-groups:
+  - name: Anime1
+    type: url-test
+    include-all: true
+    exclude-filter: "(?i)🇯🇵|日本|東京|大阪|名古屋|福岡|札幌|沖縄|沖繩|JP|JPN|Japan|Tokyo|Osaka|Nagoya|Fukuoka|Sapporo|Okinawa"
+    exclude-type: direct
+    empty-fallback: REJECT
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    timeout: 5000
+    tolerance: 50
+    lazy: true
+rules:
+  - MATCH,Anime1
+`;
+  const instance = startMihomo(home, config, apiPort);
+  try {
+    await instance.ready();
+    const response = await fetch(`http://127.0.0.1:${apiPort}/proxies/Anime1`);
+    const group = await response.json();
+    assert(response.ok && Array.isArray(group.all), "Anime1 proxy group was not exposed through the Mihomo API");
+    for (const node of japaneseNodes) {
+      assert(!group.all.includes(node), `Anime1 unexpectedly retained Japanese node ${node}`);
+    }
+    for (const node of nonJapaneseNodes) {
+      assert(group.all.includes(node), `Anime1 unexpectedly excluded non-Japanese node ${node}`);
+    }
+    assert(
+      group.all.length === nonJapaneseNodes.length,
+      `Anime1 exposed unexpected candidates: ${group.all.join(", ")}`,
+    );
+    record("anime1-node-filtering", `${japaneseNodes.length} Japanese labels excluded; ${nonJapaneseNodes.length} non-Japanese nodes retained`);
+  } finally {
+    await stopMihomo(instance);
+  }
+}
+
 function proxyRequest(proxyPort, hostname, targetPort, timeout = 8000) {
   return new Promise((resolve, reject) => {
     const socket = createConnection(proxyPort, "127.0.0.1");
@@ -579,6 +645,7 @@ let runtimeFailure;
 try {
   const version = run(["-v"]).stdout.trim();
   console.log(`Using ${version}`);
+  await validateAnime1NodeFiltering();
   await validateRemoteMrs();
   await validateRuleOrderAndIpv6();
   await validateDnsPolicyRouting();

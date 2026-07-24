@@ -97,6 +97,17 @@ proxy-groups:
     timeout: 5000
     tolerance: 50
     lazy: true
+  - name: "Anime1"
+    type: url-test
+    include-all: true
+    exclude-filter: "(?i)🇯🇵|日本|東京|大阪|名古屋|福岡|札幌|沖縄|沖繩|JP|JPN|Japan|Tokyo|Osaka|Nagoya|Fukuoka|Sapporo|Okinawa"
+    exclude-type: direct
+    empty-fallback: REJECT
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    timeout: 5000
+    tolerance: 50
+    lazy: true
   - name: "PROXY"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/proxy.png?v=20260717
@@ -218,6 +229,11 @@ rule-providers:
       - ".dogni.work"
       - "stun.parsec.app"
       - "stun6.parsec.app"
+  anime1-domain:
+    type: inline
+    behavior: domain
+    payload:
+      - "+.anime1.me"
   ai-domain:
     type: inline
     behavior: domain
@@ -382,6 +398,7 @@ rules:
   - SUB-RULE,(PROCESS-NAME,pservice.exe),parsec-routing
   - SUB-RULE,(PROCESS-NAME,parsecd),parsec-routing
   - RULE-SET,direct-cn-domain,DIRECT
+  - RULE-SET,anime1-domain,Anime1
   - RULE-SET,category-ads-all,AdBlock
   - RULE-SET,ai-domain,AI
   - RULE-SET,category-ai-!cn,AI

@@ -12,6 +12,7 @@ rules:
   - SUB-RULE,(PROCESS-NAME,pservice.exe),parsec-routing
   - SUB-RULE,(PROCESS-NAME,parsecd),parsec-routing
   - RULE-SET,direct-cn-domain,DIRECT
+  - RULE-SET,anime1-domain,Anime1
   - RULE-SET,category-ads-all,AdBlock
   - RULE-SET,ai-domain,AI
   - RULE-SET,category-ai-!cn,AI

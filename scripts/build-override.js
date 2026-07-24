@@ -293,6 +293,86 @@ function validateProxyGroups(output, profileName) {
   }
 }
 
+function validateAnime1Routing(output, profileName) {
+  const groupBlock = output.match(
+    /^  - name: "Anime1"\n([\s\S]*?)(?=^  - name:|^rule-providers:)/mu,
+  )?.[1] ?? "";
+  if (!groupBlock) {
+    throw new Error(`${profileName}: missing Anime1 proxy group`);
+  }
+  for (const field of [
+    "type: url-test",
+    "include-all: true",
+    "exclude-type: direct",
+    "empty-fallback: REJECT",
+  ]) {
+    if (!new RegExp(`^    ${field}$`, "mu").test(groupBlock)) {
+      throw new Error(`${profileName}: Anime1 proxy group must include ${field}`);
+    }
+  }
+  if (/^    proxies:/mu.test(groupBlock)) {
+    throw new Error(`${profileName}: Anime1 must not fall back to an unfiltered proxy group`);
+  }
+
+  const configuredFilter = groupBlock.match(/^    exclude-filter: "([^"]+)"$/mu)?.[1];
+  if (!configuredFilter?.startsWith("(?i)")) {
+    throw new Error(`${profileName}: Anime1 must use a case-insensitive exclude-filter`);
+  }
+  const filter = new RegExp(configuredFilter.slice(4), "iu");
+  const excludedJapaneseNodes = [
+    "JP-01",
+    "JPN Premium",
+    "Japan 01",
+    "🇯🇵 Tokyo",
+    "日本",
+    "東京-01",
+    "大阪-01",
+    "名古屋-01",
+    "福岡-01",
+    "札幌-01",
+    "沖縄-01",
+    "沖繩-01",
+    "Osaka 01",
+    "Nagoya 01",
+    "Fukuoka 01",
+    "Sapporo 01",
+    "Okinawa 01",
+  ];
+  const retainedNonJapaneseNodes = [
+    "HK-01",
+    "TW 台灣",
+    "SG Singapore",
+    "US Los Angeles",
+  ];
+  for (const node of excludedJapaneseNodes) {
+    if (!filter.test(node)) {
+      throw new Error(`${profileName}: Anime1 exclude-filter does not reject Japanese node ${node}`);
+    }
+  }
+  for (const node of retainedNonJapaneseNodes) {
+    if (filter.test(node)) {
+      throw new Error(`${profileName}: Anime1 exclude-filter incorrectly rejects non-Japanese node ${node}`);
+    }
+  }
+
+  const providerBlock = ruleProviderBlocks(output).get("anime1-domain") ?? "";
+  if (
+    !/^    type: inline$/mu.test(providerBlock)
+    || !/^    behavior: domain$/mu.test(providerBlock)
+    || !/^      - "\+\.anime1\.me"$/mu.test(providerBlock)
+  ) {
+    throw new Error(`${profileName}: anime1-domain must be an inline +.anime1.me domain provider`);
+  }
+
+  const rules = [...output.matchAll(/^  - ([A-Z-]+,[^\n]+)$/gmu)].map((match) => match[1].trim());
+  const anime1Rule = "RULE-SET,anime1-domain,Anime1";
+  const anime1Index = rules.indexOf(anime1Rule);
+  const firstGeneralServiceIndex = rules.indexOf("RULE-SET,category-ads-all,AdBlock");
+  if (anime1Index < 0 || firstGeneralServiceIndex < 0 || anime1Index > firstGeneralServiceIndex) {
+    throw new Error(`${profileName}: ${anime1Rule} must precede general service and location rules`);
+  }
+}
+
 function validateRuleMirror(output, profileName) {
   for (const [provider, block] of ruleProviderBlocks(output)) {
     if (!/^    type: http$/mu.test(block)) continue;
@@ -458,6 +538,7 @@ function build(profile) {
   );
   validateReferences(output, profile.name);
   validateProxyGroups(output, profile.name);
+  validateAnime1Routing(output, profile.name);
   validateRuleSafety(output, profile.name);
   validateParsecRouting(output, profile.name);
   validateRuleMirror(output, profile.name);
