@@ -188,6 +188,12 @@ proxy-groups:
     timeout: 5000
     tolerance: 50
     lazy: true
+  - name: "PROXY"
+    type: select
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/proxy.png?v=20260717
+    include-all: true
+    proxies:
+      - "Auto"
   - name: "Anime1"
     type: url-test
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/anime1.png?v=20260724
@@ -200,12 +206,6 @@ proxy-groups:
     timeout: 5000
     tolerance: 50
     lazy: true
-  - name: "PROXY"
-    type: select
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/proxy.png?v=20260717
-    include-all: true
-    proxies:
-      - "Auto"
   - name: "AI"
     type: select
     icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/ai.png?v=20260717

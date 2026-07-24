@@ -294,6 +294,13 @@ function validateProxyGroups(output, profileName) {
 }
 
 function validateAnime1Routing(output, profileName) {
+  const groupNames = [...output.matchAll(/^  - name: "([^"]+)"$/gmu)].map((match) => match[1]);
+  const proxyIndex = groupNames.indexOf("PROXY");
+  const anime1GroupIndex = groupNames.indexOf("Anime1");
+  if (proxyIndex < 0 || anime1GroupIndex !== proxyIndex + 1) {
+    throw new Error(`${profileName}: Anime1 proxy group must appear immediately after PROXY`);
+  }
+
   const groupBlock = output.match(
     /^  - name: "Anime1"\n([\s\S]*?)(?=^  - name:|^rule-providers:)/mu,
   )?.[1] ?? "";
