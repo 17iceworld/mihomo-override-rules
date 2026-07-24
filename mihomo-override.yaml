@@ -105,7 +105,7 @@ proxy-groups:
       - "Auto"
   - name: "Anime1"
     type: url-test
-    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/anime1.png?v=20260724
+    icon: https://raw.githubusercontent.com/17iceworld/mihomo-override-rules/main/icons/anime1.png?v=20260724-2
     include-all: true
     exclude-filter: "(?i)🇯🇵|日本|東京|大阪|名古屋|福岡|札幌|沖縄|沖繩|JP|JPN|Japan|Tokyo|Osaka|Nagoya|Fukuoka|Sapporo|Okinawa"
     exclude-type: direct
