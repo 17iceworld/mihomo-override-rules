@@ -7,12 +7,13 @@ Modular Mihomo override rules for Sparkle. This repository keeps routing, DNS po
 - Two generated overrides:
   - `mihomo-override.yaml`: light profile for common AI, Google, YouTube, Telegram, GitHub/GitLab, domestic, non-China, private, ad-block, and final routing.
   - `mihomo-override_full.yaml`: expanded profile with Apple CN/Global, Microsoft/OneDrive, TikTok, X/Twitter, Instagram, Reddit, Game, and extra AI routing.
-- Clean strategy group names such as `PROXY`, `Auto`, `AI`, `AdBlock`, `Domestic`, and `Final`.
+- Clean strategy group names such as `PROXY`, `Auto`, `Anime1`, `AI`, `AdBlock`, `Domestic`, and `Final`.
 - PNG proxy group icons from `icons/`, referenced through GitHub raw URLs.
-- Inline custom domain rules under `rules/` for AI, Apple CN, direct CN, direct global, X, Instagram, and Reddit.
+- Inline custom domain rules under `rules/` for Anime1, AI, Apple CN, direct CN, direct global, X, Instagram, and Reddit.
 - Remote MetaCubeX MRS rule providers for common services, China geosite/geoip, private IP, ads, and game platforms.
-- DNS policy using `fake-ip`, AliDNS/DNSPod DoH for domestic rules, and Cloudflare DoH for proxied or global rules.
-- Explicitly closed LAN access and routed DNS transports (`#DIRECT` for domestic/bootstrap traffic and `#PROXY` for global queries).
+- Process-aware Parsec routing: private and mainland China peer IPs use `DIRECT`, all other Parsec traffic uses `PROXY`, and Parsec STUN remains direct for P2P negotiation.
+- DNS policy using `fake-ip`, AliDNS/DNSPod DoH for private, China, Apple CN, and general Microsoft/OneDrive rules, and Cloudflare/Google DoH for AI and other proxied or global rules.
+- Explicitly closed LAN access and routed DNS transports (`#DIRECT` for bootstrap and direct-DNS exceptions, and `#PROXY` for AI and other global queries). AI DNS policies precede Microsoft/OneDrive so overlapping services such as Copilot keep using proxy DNS.
 
 ## Profile Differences
 
@@ -28,10 +29,12 @@ Modular Mihomo override rules for Sparkle. This repository keeps routing, DNS po
 Light groups:
 
 ```text
-Auto, PROXY, AI, AdBlock, YouTube, Google, Telegram, GitHub, NonChina, Private, Domestic, Final
+Auto, Anime1, PROXY, AI, AdBlock, YouTube, Google, Telegram, GitHub, NonChina, Private, Domestic, Final
 ```
 
 Light routing covers direct/private traffic, custom direct domains, ads, AI, OpenAI, YouTube, Google, Telegram, GitHub/GitLab, China domain/IP, non-China domains, Google IP, Telegram IP, and final fallback.
+
+`anime1.me` and its subdomains use the dedicated `Anime1` latency-test group. The group includes subscription nodes automatically but excludes common Japanese country, flag, and city labels. If no non-Japanese node remains, it rejects the connection instead of falling back to an unrestricted group.
 
 Google and GitHub default to the `AI` group so Gemini and Copilot authentication use the same selected exit as their AI service traffic. Full applies the same default to Microsoft for shared Copilot login endpoints. Existing profiles with `store-selected` may retain an older manual group selection; select `AI` once in those groups to opt into the shared exit.
 
@@ -62,6 +65,7 @@ Full also adds rule providers for `anthropic`, `apple-cn`, `apple`, `microsoft`,
 ├── icons/
 │   ├── adblock.png
 │   ├── ai.png
+│   ├── anime1.png
 │   ├── apple-cn.png
 │   ├── apple.png
 │   ├── auto.png
@@ -90,6 +94,7 @@ Full also adds rule providers for `anthropic`, `apple-cn`, `apple`, `microsoft`,
 │   ├── rule-providers.yaml
 │   └── rules.yaml
 ├── rules/
+│   ├── anime1.yaml
 │   ├── ai.yaml
 │   ├── apple-cn.yaml
 │   ├── direct-cn.yaml
@@ -103,6 +108,8 @@ Full also adds rule providers for `anthropic`, `apple-cn`, `apple`, `microsoft`,
 │   └── cases.yaml
 └── package.json
 ```
+
+`icons/anime1.png` is a 128×128 derivative of the transparent 260×260 site image published by Anime1 at `https://sta.anicdn.com/logo/260x260.png`.
 
 ## Build And Test
 
@@ -129,10 +136,13 @@ Supported values are `direct`, `gh-proxy`, and `jsdelivr`. Use the same value wi
 - HTTP rule providers include required fields
 - generated rule-provider URLs do not use unproxied raw GitHub URLs
 - DNS `rule-set:` policies reference existing providers
+- Microsoft/OneDrive DNS exceptions use `#DIRECT`, while higher-priority overlapping AI policies use `#PROXY`
 - generated overrides are current and check mode never rewrites them
 - proxy groups have no unknown references or dependency cycles
+- the Anime1 group is an automatic group with strict Japanese-node exclusion, no unrestricted fallback, and representative JP/non-JP node-name coverage
 - rules contain no duplicates, end in exactly one `MATCH`, and IP rules use `no-resolve`
-- encrypted DNS bootstrap, closed LAN access, and explicit domestic/global DNS routes
+- Parsec process rules enter an ordered private/CN-IP/direct-else-proxy sub-rule, while only its STUN endpoints receive unconditional direct exceptions
+- encrypted DNS bootstrap, closed LAN access, and explicit direct-exception/proxy DNS routes
 - cases in `tests/cases.yaml` reference valid rules in the full profile
 - inline-domain cases resolve to the expected first matching inline provider and outbound
 
@@ -193,6 +203,7 @@ https://raw.githubusercontent.com/<your-user>/<your-repo>/main/mihomo-override_f
 The checked cases live in `tests/cases.yaml` and target the full profile:
 
 - `chatgpt.com`, `claude.ai`, `gemini.google.com`, `copilot.microsoft.com`, and `cursor.com` -> `AI`
+- `anime1.me` and its subdomains -> `Anime1` using a non-Japanese node
 - `apple.com.cn` -> `Apple CN`
 - `icloud.com` -> `Apple`
 - `microsoft.com` -> `Microsoft`
@@ -203,6 +214,7 @@ The checked cases live in `tests/cases.yaml` and target the full profile:
 - `store.steampowered.com` -> `Game`
 - `baidu.com` -> `Domestic`
 - `dogni.work` -> `DIRECT`
+- `stun.parsec.app` and `stun6.parsec.app` -> `DIRECT`
 - `example.cn` -> `DIRECT`
 
 Additional manual checks:
@@ -213,19 +225,20 @@ Additional manual checks:
 - `github.com` and `gitlab.com` -> `GitHub`
 - geolocation non-China domains -> `NonChina`
 - domains from MetaCubeX `category-ads-all` -> `AdBlock`
-- foreign DNS leak tests should not show the local ISP DNS; domestic domains may resolve through AliDNS or DNSPod DoH
+- AI and other global DNS leak tests should not show the local ISP DNS; private, China, Apple CN, and general Microsoft/OneDrive domains may resolve through AliDNS or DNSPod DoH
 
 ## Rule Order
 
 Routing is intentionally ordered from specific to broad:
 
 1. private and explicit custom exceptions
-2. ad blocking
-3. service-specific rules
-4. broad China domain/IP rules
-5. non-China domain rules
-6. Google and Telegram IP rules
-7. final fallback
+2. Parsec process routing by private/China/other destination IP
+3. ad blocking
+4. service-specific rules
+5. broad China domain/IP rules
+6. non-China domain rules
+7. Google and Telegram IP rules
+8. final fallback
 
 Put allow/direct exceptions before broad remote rule providers if a site is overmatched.
 

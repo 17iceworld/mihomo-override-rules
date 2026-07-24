@@ -43,6 +43,10 @@ rule-providers:
     type: inline
     behavior: domain
     payload-from: rules/direct-global.yaml
+  anime1-domain:
+    type: inline
+    behavior: domain
+    payload-from: rules/anime1.yaml
   ai-domain:
     type: inline
     behavior: domain

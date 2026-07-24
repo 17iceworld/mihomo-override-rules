@@ -53,7 +53,7 @@ function expandPayloadFrom(source) {
 }
 
 function ruleProviderBlocks(output) {
-  const providersSection = output.match(/^rule-providers:\n([\s\S]*?)^rules:/mu)?.[1] ?? "";
+  const providersSection = output.match(/^rule-providers:\n([\s\S]*?)(?=^sub-rules:|^rules:)/mu)?.[1] ?? "";
   const blocks = new Map();
   let currentProvider = null;
   let currentBlock = [];
@@ -180,6 +180,77 @@ function validateRuleSafety(output, profileName) {
   }
 }
 
+function validateParsecRouting(output, profileName) {
+  if (!/^find-process-mode: strict$/mu.test(output)) {
+    throw new Error(`${profileName}: Parsec routing requires find-process-mode: strict`);
+  }
+
+  const providerBlocks = ruleProviderBlocks(output);
+  for (const provider of ["private-ip", "cn-ip"]) {
+    if (!providerBlocks.has(provider)) {
+      throw new Error(`${profileName}: Parsec routing references missing provider ${provider}`);
+    }
+  }
+
+  const subRulesSection = output.match(/^sub-rules:\n([\s\S]*?)^rules:/mu)?.[1] ?? "";
+  const parsecBlock = subRulesSection.match(/^  parsec-routing:\n((?:    - .+\n?)*)/mu)?.[1] ?? "";
+  const parsecRules = [...parsecBlock.matchAll(/^    - (.+)$/gmu)].map((match) => match[1]);
+  const expectedParsecRules = [
+    "RULE-SET,private-ip,DIRECT,no-resolve",
+    "RULE-SET,cn-ip,DIRECT,no-resolve",
+    "MATCH,PROXY",
+  ];
+  if (parsecRules.join("\n") !== expectedParsecRules.join("\n")) {
+    throw new Error(
+      `${profileName}: parsec-routing must route private/CN IPs directly and all remaining traffic through PROXY`,
+    );
+  }
+
+  const rules = [...output.matchAll(/^  - ([A-Z-]+,[^\n]+)$/gmu)].map((match) => match[1].trim());
+  const directGlobalIndex = rules.indexOf("RULE-SET,direct-global-domain,DIRECT");
+  const firstGeneralServiceIndex = rules.indexOf("RULE-SET,category-ads-all,AdBlock");
+  const processNames = ["parsecd.exe", "pservice.exe", "parsecd"];
+  for (const processName of processNames) {
+    const rule = `SUB-RULE,(PROCESS-NAME,${processName}),parsec-routing`;
+    const index = rules.indexOf(rule);
+    if (index < 0) {
+      throw new Error(`${profileName}: missing Parsec process rule ${rule}`);
+    }
+    if (index < directGlobalIndex || index > firstGeneralServiceIndex) {
+      throw new Error(`${profileName}: ${rule} must follow direct exceptions and precede general service rules`);
+    }
+  }
+
+  const directGlobalDomains = [
+    ...(providerBlocks.get("direct-global-domain") ?? "").matchAll(/^      - "([^"]+)"$/gmu),
+  ].map((match) => match[1]);
+  for (const stunDomain of ["stun.parsec.app", "stun6.parsec.app"]) {
+    if (!directGlobalDomains.includes(stunDomain)) {
+      throw new Error(`${profileName}: direct-global-domain is missing ${stunDomain}`);
+    }
+  }
+
+  function domainMatches(pattern, domain) {
+    if (pattern.startsWith("*.")) return domain.endsWith(pattern.slice(1)) && domain !== pattern.slice(2);
+    if (pattern.startsWith("+.")) return domain === pattern.slice(2) || domain.endsWith(pattern.slice(1));
+    if (pattern.startsWith(".")) return domain === pattern.slice(1) || domain.endsWith(pattern);
+    return domain === pattern;
+  }
+
+  for (const domain of [
+    "kessel-ws.parsec.app",
+    "kessel-api.parsec.app",
+    "builds.parsec.app",
+    "public.parsec.app",
+    "builds.parsecgaming.com",
+    "parsecusercontent.com",
+  ]) {
+    if (directGlobalDomains.some((pattern) => domainMatches(pattern, domain))) {
+      throw new Error(`${profileName}: Parsec control-plane domain ${domain} must not be unconditionally DIRECT`);
+    }
+  }
+}
+
 function validateProxyGroups(output, profileName) {
   const section = output.match(/^proxy-groups:\n([\s\S]*?)^rule-providers:/mu)?.[1] ?? "";
   const blocks = section.split(/(?=^  - name: )/mu).filter((block) => /^  - name: /mu.test(block));
@@ -222,6 +293,86 @@ function validateProxyGroups(output, profileName) {
   }
 }
 
+function validateAnime1Routing(output, profileName) {
+  const groupBlock = output.match(
+    /^  - name: "Anime1"\n([\s\S]*?)(?=^  - name:|^rule-providers:)/mu,
+  )?.[1] ?? "";
+  if (!groupBlock) {
+    throw new Error(`${profileName}: missing Anime1 proxy group`);
+  }
+  for (const field of [
+    "type: url-test",
+    "include-all: true",
+    "exclude-type: direct",
+    "empty-fallback: REJECT",
+  ]) {
+    if (!new RegExp(`^    ${field}$`, "mu").test(groupBlock)) {
+      throw new Error(`${profileName}: Anime1 proxy group must include ${field}`);
+    }
+  }
+  if (/^    proxies:/mu.test(groupBlock)) {
+    throw new Error(`${profileName}: Anime1 must not fall back to an unfiltered proxy group`);
+  }
+
+  const configuredFilter = groupBlock.match(/^    exclude-filter: "([^"]+)"$/mu)?.[1];
+  if (!configuredFilter?.startsWith("(?i)")) {
+    throw new Error(`${profileName}: Anime1 must use a case-insensitive exclude-filter`);
+  }
+  const filter = new RegExp(configuredFilter.slice(4), "iu");
+  const excludedJapaneseNodes = [
+    "JP-01",
+    "JPN Premium",
+    "Japan 01",
+    "🇯🇵 Tokyo",
+    "日本",
+    "東京-01",
+    "大阪-01",
+    "名古屋-01",
+    "福岡-01",
+    "札幌-01",
+    "沖縄-01",
+    "沖繩-01",
+    "Osaka 01",
+    "Nagoya 01",
+    "Fukuoka 01",
+    "Sapporo 01",
+    "Okinawa 01",
+  ];
+  const retainedNonJapaneseNodes = [
+    "HK-01",
+    "TW 台灣",
+    "SG Singapore",
+    "US Los Angeles",
+  ];
+  for (const node of excludedJapaneseNodes) {
+    if (!filter.test(node)) {
+      throw new Error(`${profileName}: Anime1 exclude-filter does not reject Japanese node ${node}`);
+    }
+  }
+  for (const node of retainedNonJapaneseNodes) {
+    if (filter.test(node)) {
+      throw new Error(`${profileName}: Anime1 exclude-filter incorrectly rejects non-Japanese node ${node}`);
+    }
+  }
+
+  const providerBlock = ruleProviderBlocks(output).get("anime1-domain") ?? "";
+  if (
+    !/^    type: inline$/mu.test(providerBlock)
+    || !/^    behavior: domain$/mu.test(providerBlock)
+    || !/^      - "\+\.anime1\.me"$/mu.test(providerBlock)
+  ) {
+    throw new Error(`${profileName}: anime1-domain must be an inline +.anime1.me domain provider`);
+  }
+
+  const rules = [...output.matchAll(/^  - ([A-Z-]+,[^\n]+)$/gmu)].map((match) => match[1].trim());
+  const anime1Rule = "RULE-SET,anime1-domain,Anime1";
+  const anime1Index = rules.indexOf(anime1Rule);
+  const firstGeneralServiceIndex = rules.indexOf("RULE-SET,category-ads-all,AdBlock");
+  if (anime1Index < 0 || firstGeneralServiceIndex < 0 || anime1Index > firstGeneralServiceIndex) {
+    throw new Error(`${profileName}: ${anime1Rule} must precede general service and location rules`);
+  }
+}
+
 function validateRuleMirror(output, profileName) {
   for (const [provider, block] of ruleProviderBlocks(output)) {
     if (!/^    type: http$/mu.test(block)) continue;
@@ -256,9 +407,9 @@ function validateDnsPolicies(output, profileName) {
       throw new Error(`${profileName}: direct-cn-domain must not use Cloudflare DNS providers`);
     }
 
-    const domestic = new Set(["private-domain", "apple-cn-domain", "direct-cn-domain", "cn-domain", "geolocation-cn", "apple-cn", "microsoft", "onedrive"]);
+    const directDnsProviders = new Set(["private-domain", "apple-cn-domain", "direct-cn-domain", "cn-domain", "geolocation-cn", "apple-cn", "microsoft", "onedrive"]);
     const routes = [...policy.matchAll(/^      - (.+)$/gmu)].map((match) => match[1]);
-    const requiredRoute = domestic.has(provider) ? "#DIRECT" : "#PROXY";
+    const requiredRoute = directDnsProviders.has(provider) ? "#DIRECT" : "#PROXY";
     if (routes.some((route) => !route.endsWith(requiredRoute))) {
       throw new Error(`${profileName}: DNS policy ${provider} must use ${requiredRoute}`);
     }
@@ -387,7 +538,9 @@ function build(profile) {
   );
   validateReferences(output, profile.name);
   validateProxyGroups(output, profile.name);
+  validateAnime1Routing(output, profile.name);
   validateRuleSafety(output, profile.name);
+  validateParsecRouting(output, profile.name);
   validateRuleMirror(output, profile.name);
   validateDnsPolicies(output, profile.name);
   return output;
