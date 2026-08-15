@@ -389,26 +389,15 @@ function validateWeChatRouting(output, profileName) {
   const rules = [...output.matchAll(/^  - ([A-Z-]+,[^\n]+)$/gmu)].map((match) => match[1].trim());
   const firstGeneralServiceIndex = rules.indexOf("RULE-SET,category-ads-all,AdBlock");
   for (const processName of ["Weixin.exe", "WeChat.exe", "WeChatAppEx.exe"]) {
-    const rule = `SUB-RULE,(PROCESS-NAME,${processName}),wechat-routing`;
+    const rule = `PROCESS-NAME,${processName},DIRECT`;
     const index = rules.indexOf(rule);
     if (index < 0 || index > firstGeneralServiceIndex) {
       throw new Error(`${profileName}: ${rule} must precede general service rules`);
     }
   }
 
-  const subRulesSection = output.match(/^sub-rules:\n([\s\S]*?)^rules:/mu)?.[1] ?? "";
-  const wechatBlock = subRulesSection.match(
-    /^  wechat-routing:\n((?:    (?:#.*|- .*)\n?)*)/mu,
-  )?.[1] ?? "";
-  const wechatRules = [...wechatBlock.matchAll(/^    - (.+)$/gmu)].map((match) => match[1]);
-  const expectedWeChatRules = [
-    "IP-CIDR6,::/0,REJECT,no-resolve",
-    "MATCH,DIRECT",
-  ];
-  if (wechatRules.join("\n") !== expectedWeChatRules.join("\n")) {
-    throw new Error(
-      `${profileName}: wechat-routing must reject IPv6 immediately and route IPv4 directly`,
-    );
+  if (!/^ipv6: false$/mu.test(output) || !/^  ipv6: false$/mu.test(output)) {
+    throw new Error(`${profileName}: unusable IPv6 must be disabled globally and in DNS`);
   }
 
   const fakeIpFilter = output.match(
