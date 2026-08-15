@@ -25,6 +25,20 @@ dns:
     - "*.localhost"
     - "*.home.arpa"
     - "localhost.ptlogin2.qq.com"
+    # WeChat uses proprietary long-lived connections and IP endpoint racing.
+    # Return real addresses so those sessions are not rebuilt through Fake-IP.
+    - "+.qq.com"
+    - "+.qpic.cn"
+    - "+.qlogo.cn"
+    - "+.gtimg.cn"
+    - "+.weixin.com"
+    - "+.wechat.com"
+    - "+.wechatapp.com"
+    - "+.weixinbridge.com"
+    - "+.tencent.com"
+    - "+.tencent-cloud.net"
+    - "+.myqcloud.com"
+    - "+.tenpay.com"
     - "+.msftconnecttest.com"
     - "+.msftncsi.com"
     - "+.stun.*.*"
@@ -411,6 +425,9 @@ rules:
   - RULE-SET,private-ip,DIRECT,no-resolve
   - RULE-SET,private,Private,no-resolve
   - RULE-SET,direct-global-domain,DIRECT
+  - PROCESS-NAME,Weixin.exe,DIRECT
+  - PROCESS-NAME,WeChat.exe,DIRECT
+  - PROCESS-NAME,WeChatAppEx.exe,DIRECT
   - SUB-RULE,(PROCESS-NAME,parsecd.exe),parsec-routing
   - SUB-RULE,(PROCESS-NAME,pservice.exe),parsec-routing
   - SUB-RULE,(PROCESS-NAME,parsecd),parsec-routing
