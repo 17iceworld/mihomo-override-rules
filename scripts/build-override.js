@@ -32,7 +32,9 @@ const jsDelivrPrefix = "https://cdn.jsdelivr.net/gh/";
 const ruleMirror = process.env.RULE_MIRROR ?? "gh-proxy";
 
 function readText(file) {
-  return readFileSync(resolve(root, file), "utf8").replace(/\s+$/u, "");
+  return readFileSync(resolve(root, file), "utf8")
+    .replaceAll("\r\n", "\n")
+    .replace(/\s+$/u, "");
 }
 
 function topLevelKeys(source) {

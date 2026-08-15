@@ -12,6 +12,7 @@ Modular Mihomo override rules for Sparkle. This repository keeps routing, DNS po
 - Inline custom domain rules under `rules/` for Anime1, AI, Apple CN, direct CN, direct global, X, Instagram, and Reddit.
 - Remote MetaCubeX MRS rule providers for common services, China geosite/geoip, private IP, ads, and game platforms.
 - Process-aware Parsec routing: private and mainland China peer IPs use `DIRECT`, all other Parsec traffic uses `PROXY`, and Parsec STUN remains direct for P2P negotiation.
+- High-priority direct routing for WeChat/Tencent login, messaging, avatar, and media CDN domains, before ad and global service rules.
 - DNS policy using `fake-ip`, AliDNS/DNSPod DoH for private, China, Apple CN, and general Microsoft/OneDrive rules, and Cloudflare/Google DoH for AI and other proxied or global rules.
 - Explicitly closed LAN access and routed DNS transports (`#DIRECT` for bootstrap and direct-DNS exceptions, and `#PROXY` for AI and other global queries). AI DNS policies precede Microsoft/OneDrive so overlapping services such as Copilot keep using proxy DNS.
 

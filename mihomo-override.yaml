@@ -219,6 +219,21 @@ rule-providers:
     behavior: domain
     payload:
       - ".cn"
+      # Keep WeChat/Tencent messaging, media, avatar, and login traffic on the
+      # mainland route. These explicit exceptions are evaluated before ad and
+      # global service providers, including for non-.cn CDN hostnames.
+      - "+.qq.com"
+      - "+.qpic.cn"
+      - "+.qlogo.cn"
+      - "+.gtimg.cn"
+      - "+.weixin.com"
+      - "+.wechat.com"
+      - "+.wechatapp.com"
+      - "+.weixinbridge.com"
+      - "+.tencent.com"
+      - "+.tencent-cloud.net"
+      - "+.myqcloud.com"
+      - "+.tenpay.com"
   direct-global-domain:
     type: inline
     behavior: domain
