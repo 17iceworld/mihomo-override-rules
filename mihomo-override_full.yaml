@@ -705,6 +705,12 @@ rule-providers:
     interval: 86400
 
 sub-rules:
+  wechat-routing:
+    # This profile may run on networks without working native IPv6. Fail
+    # WeChat IPv6 attempts immediately so its endpoint race falls back to IPv4
+    # instead of waiting for repeated dial timeouts during message sync.
+    - IP-CIDR6,::/0,REJECT,no-resolve
+    - MATCH,DIRECT
   parsec-routing:
     - RULE-SET,private-ip,DIRECT,no-resolve
     - RULE-SET,cn-ip,DIRECT,no-resolve
@@ -714,9 +720,9 @@ rules:
   - RULE-SET,private-ip,DIRECT,no-resolve
   - RULE-SET,private,Private,no-resolve
   - RULE-SET,direct-global-domain,DIRECT
-  - PROCESS-NAME,Weixin.exe,DIRECT
-  - PROCESS-NAME,WeChat.exe,DIRECT
-  - PROCESS-NAME,WeChatAppEx.exe,DIRECT
+  - SUB-RULE,(PROCESS-NAME,Weixin.exe),wechat-routing
+  - SUB-RULE,(PROCESS-NAME,WeChat.exe),wechat-routing
+  - SUB-RULE,(PROCESS-NAME,WeChatAppEx.exe),wechat-routing
   - SUB-RULE,(PROCESS-NAME,parsecd.exe),parsec-routing
   - SUB-RULE,(PROCESS-NAME,pservice.exe),parsec-routing
   - SUB-RULE,(PROCESS-NAME,parsecd),parsec-routing
