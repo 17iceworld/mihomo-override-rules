@@ -8,9 +8,6 @@ rules:
   - RULE-SET,private-ip,DIRECT,no-resolve
   - RULE-SET,private,Private,no-resolve
   - RULE-SET,direct-global-domain,DIRECT
-  - PROCESS-NAME,Weixin.exe,DIRECT
-  - PROCESS-NAME,WeChat.exe,DIRECT
-  - PROCESS-NAME,WeChatAppEx.exe,DIRECT
   - SUB-RULE,(PROCESS-NAME,parsecd.exe),parsec-routing
   - SUB-RULE,(PROCESS-NAME,pservice.exe),parsec-routing
   - SUB-RULE,(PROCESS-NAME,parsecd),parsec-routing

@@ -385,39 +385,6 @@ function validateAnime1Routing(output, profileName) {
   }
 }
 
-function validateWeChatRouting(output, profileName) {
-  const rules = [...output.matchAll(/^  - ([A-Z-]+,[^\n]+)$/gmu)].map((match) => match[1].trim());
-  const firstGeneralServiceIndex = rules.indexOf("RULE-SET,category-ads-all,AdBlock");
-  for (const processName of ["Weixin.exe", "WeChat.exe", "WeChatAppEx.exe"]) {
-    const rule = `PROCESS-NAME,${processName},DIRECT`;
-    const index = rules.indexOf(rule);
-    if (index < 0 || index > firstGeneralServiceIndex) {
-      throw new Error(`${profileName}: ${rule} must precede general service rules`);
-    }
-  }
-
-  if (!/^ipv6: false$/mu.test(output) || !/^  ipv6: false$/mu.test(output)) {
-    throw new Error(`${profileName}: unusable IPv6 must be disabled globally and in DNS`);
-  }
-
-  const fakeIpFilter = output.match(
-    /^  fake-ip-filter:\n((?:    (?:#.*|- .*)\n)+)/mu,
-  )?.[1] ?? "";
-  for (const domain of [
-    "+.qq.com",
-    "+.qpic.cn",
-    "+.qlogo.cn",
-    "+.gtimg.cn",
-    "+.weixin.com",
-    "+.wechat.com",
-    "+.tencent.com",
-  ]) {
-    if (!fakeIpFilter.includes(`- "${domain}"`)) {
-      throw new Error(`${profileName}: WeChat Fake-IP filter is missing ${domain}`);
-    }
-  }
-}
-
 function validateRuleMirror(output, profileName) {
   for (const [provider, block] of ruleProviderBlocks(output)) {
     if (!/^    type: http$/mu.test(block)) continue;
@@ -584,7 +551,6 @@ function build(profile) {
   validateReferences(output, profile.name);
   validateProxyGroups(output, profile.name);
   validateAnime1Routing(output, profile.name);
-  validateWeChatRouting(output, profile.name);
   validateRuleSafety(output, profile.name);
   validateParsecRouting(output, profile.name);
   validateRuleMirror(output, profile.name);

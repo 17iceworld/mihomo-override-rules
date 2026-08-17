@@ -1,5 +1,5 @@
 allow-lan: false
-ipv6: false
+ipv6: true
 mode: rule
 find-process-mode: strict
 profile:
@@ -13,7 +13,7 @@ dns:
   use-system-hosts: true
   respect-rules: true
   listen: 0.0.0.0:1053
-  ipv6: false
+  ipv6: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter-mode: blacklist
@@ -23,20 +23,6 @@ dns:
     - "*.localhost"
     - "*.home.arpa"
     - "localhost.ptlogin2.qq.com"
-    # WeChat uses proprietary long-lived connections and IP endpoint racing.
-    # Return real addresses so those sessions are not rebuilt through Fake-IP.
-    - "+.qq.com"
-    - "+.qpic.cn"
-    - "+.qlogo.cn"
-    - "+.gtimg.cn"
-    - "+.weixin.com"
-    - "+.wechat.com"
-    - "+.wechatapp.com"
-    - "+.weixinbridge.com"
-    - "+.tencent.com"
-    - "+.tencent-cloud.net"
-    - "+.myqcloud.com"
-    - "+.tenpay.com"
     - "+.msftconnecttest.com"
     - "+.msftncsi.com"
     - "+.stun.*.*"
