@@ -32,7 +32,9 @@ const jsDelivrPrefix = "https://cdn.jsdelivr.net/gh/";
 const ruleMirror = process.env.RULE_MIRROR ?? "gh-proxy";
 
 function readText(file) {
-  return readFileSync(resolve(root, file), "utf8").replace(/\s+$/u, "");
+  return readFileSync(resolve(root, file), "utf8")
+    .replaceAll("\r\n", "\n")
+    .replace(/\s+$/u, "");
 }
 
 function topLevelKeys(source) {
@@ -367,8 +369,11 @@ function validateAnime1Routing(output, profileName) {
     !/^    type: inline$/mu.test(providerBlock)
     || !/^    behavior: domain$/mu.test(providerBlock)
     || !/^      - "\+\.anime1\.me"$/mu.test(providerBlock)
+    || !/^      - "\+\.hanime1\.me"$/mu.test(providerBlock)
   ) {
-    throw new Error(`${profileName}: anime1-domain must be an inline +.anime1.me domain provider`);
+    throw new Error(
+      `${profileName}: anime1-domain must include +.anime1.me and +.hanime1.me as inline domains`,
+    );
   }
 
   const rules = [...output.matchAll(/^  - ([A-Z-]+,[^\n]+)$/gmu)].map((match) => match[1].trim());
