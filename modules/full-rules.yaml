@@ -15,6 +15,7 @@ rules:
   - RULE-SET,direct-cn-domain,DIRECT
   - RULE-SET,anime1-domain,Anime1
   - RULE-SET,category-ads-all,AdBlock
+  - RULE-SET,category-ai-cn,Domestic
   - RULE-SET,ai-domain,AI
   - RULE-SET,category-ai-!cn,AI
   - RULE-SET,openai,AI

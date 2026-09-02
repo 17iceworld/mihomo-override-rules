@@ -79,6 +79,14 @@ rule-providers:
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs
     path-in-bundle: geo/geosite/category-ai-!cn.mrs
     interval: 86400
+  category-ai-cn:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/category-ai-cn.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-cn.mrs
+    path-in-bundle: geo/geosite/category-ai-cn.mrs
+    interval: 86400
   openai:
     type: http
     behavior: domain

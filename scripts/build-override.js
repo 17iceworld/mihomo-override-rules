@@ -378,6 +378,13 @@ function validateAnime1Routing(output, profileName) {
   if (anime1Index < 0 || firstGeneralServiceIndex < 0 || anime1Index > firstGeneralServiceIndex) {
     throw new Error(`${profileName}: ${anime1Rule} must precede general service and location rules`);
   }
+
+  const mainlandAiRule = "RULE-SET,category-ai-cn,Domestic";
+  const mainlandAiIndex = rules.indexOf(mainlandAiRule);
+  const internationalAiIndex = rules.indexOf("RULE-SET,ai-domain,AI");
+  if (mainlandAiIndex < 0 || internationalAiIndex < 0 || mainlandAiIndex > internationalAiIndex) {
+    throw new Error(`${profileName}: ${mainlandAiRule} must precede international AI rules`);
+  }
 }
 
 function validateRuleMirror(output, profileName) {
@@ -414,7 +421,7 @@ function validateDnsPolicies(output, profileName) {
       throw new Error(`${profileName}: direct-cn-domain must not use Cloudflare DNS providers`);
     }
 
-    const directDnsProviders = new Set(["private-domain", "apple-cn-domain", "direct-cn-domain", "cn-domain", "geolocation-cn", "apple-cn", "microsoft", "onedrive"]);
+    const directDnsProviders = new Set(["private-domain", "apple-cn-domain", "direct-cn-domain", "cn-domain", "geolocation-cn", "apple-cn", "category-ai-cn", "microsoft", "onedrive"]);
     const routes = [...policy.matchAll(/^      - (.+)$/gmu)].map((match) => match[1]);
     const requiredRoute = directDnsProviders.has(provider) ? "#DIRECT" : "#PROXY";
     if (routes.some((route) => !route.endsWith(requiredRoute))) {
