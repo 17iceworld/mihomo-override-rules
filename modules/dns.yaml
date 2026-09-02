@@ -56,6 +56,9 @@ dns:
     "rule-set:geolocation-cn":
       - https://dns.alidns.com/dns-query#DIRECT
       - https://doh.pub/dns-query#DIRECT
+    "rule-set:category-ai-cn":
+      - https://dns.alidns.com/dns-query#DIRECT
+      - https://doh.pub/dns-query#DIRECT
     "rule-set:ai-domain":
       - https://cloudflare-dns.com/dns-query#PROXY
       - https://dns.google/dns-query#PROXY

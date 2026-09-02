@@ -12,7 +12,7 @@ Modular Mihomo override rules for Sparkle. This repository keeps routing, DNS po
 - Inline custom domain rules under `rules/` for Anime1, AI, Apple CN, direct CN, direct global, X, Instagram, and Reddit.
 - Remote MetaCubeX MRS rule providers for common services, China geosite/geoip, private IP, ads, and game platforms.
 - Process-aware Parsec routing: private and mainland China peer IPs use `DIRECT`, all other Parsec traffic uses `PROXY`, and Parsec STUN remains direct for P2P negotiation.
-- DNS policy using `fake-ip`, AliDNS/DNSPod DoH for private, China, Apple CN, and general Microsoft/OneDrive rules, and Cloudflare/Google DoH for AI and other proxied or global rules.
+- DNS policy using `fake-ip`, AliDNS/DNSPod DoH for private, China, Apple CN, mainland China AI, and general Microsoft/OneDrive rules, and Cloudflare/Google DoH for AI and other proxied or global rules.
 - Explicitly closed LAN access and routed DNS transports (`#DIRECT` for bootstrap and direct-DNS exceptions, and `#PROXY` for AI and other global queries). AI DNS policies precede Microsoft/OneDrive so overlapping services such as Copilot keep using proxy DNS.
 
 ## Profile Differences
@@ -32,9 +32,9 @@ Light groups:
 Auto, Anime1, PROXY, AI, AdBlock, YouTube, Google, Telegram, GitHub, NonChina, Private, Domestic, Final
 ```
 
-Light routing covers direct/private traffic, custom direct domains, ads, AI, OpenAI, YouTube, Google, Telegram, GitHub/GitLab, China domain/IP, non-China domains, Google IP, Telegram IP, and final fallback.
+Light routing covers direct/private traffic, custom direct domains, ads, mainland China AI, global AI, OpenAI, YouTube, Google, Telegram, GitHub/GitLab, China domain/IP, non-China domains, Google IP, Telegram IP, and final fallback. Mainland China AI such as DeepSeek, Kimi, Doubao, and Tongyi uses the `Domestic` group so it stays direct by default.
 
-`anime1.me` and its subdomains use the dedicated `Anime1` latency-test group. The group includes subscription nodes automatically but excludes common Japanese country, flag, and city labels. If no non-Japanese node remains, it rejects the connection instead of falling back to an unrestricted group.
+`anime1.me`, `hanime1.me`, and their subdomains use the dedicated `Anime1` latency-test group. The group includes subscription nodes automatically but excludes common Japanese country, flag, and city labels. If no non-Japanese node remains, it rejects the connection instead of falling back to an unrestricted group.
 
 Google and GitHub default to the `AI` group so Gemini and Copilot authentication use the same selected exit as their AI service traffic. Full applies the same default to Microsoft for shared Copilot login endpoints. Existing profiles with `store-selected` may retain an older manual group selection; select `AI` once in those groups to opt into the shared exit.
 
@@ -53,7 +53,7 @@ Full includes every light group plus:
 Apple CN, Apple, Microsoft, TikTok, X, Instagram, Reddit, Game
 ```
 
-Full also adds rule providers for `anthropic`, `apple-cn`, `apple`, `microsoft`, `onedrive`, `tiktok`, `twitter`, `instagram`, `reddit`, `category-games`, `steam`, `epicgames`, `xbox`, `playstation`, and `nintendo`.
+Full also adds rule providers for `anthropic`, `apple-cn`, `apple`, `microsoft`, `onedrive`, `tiktok`, `twitter`, `instagram`, `reddit`, `category-games`, `steam`, `epicgames`, `xbox`, `playstation`, and `nintendo`. Both profiles now include MetaCubeX `category-ai-cn` ahead of global AI rules.
 
 ## Repository Layout
 
@@ -202,8 +202,9 @@ https://raw.githubusercontent.com/<your-user>/<your-repo>/main/mihomo-override_f
 
 The checked cases live in `tests/cases.yaml` and target the full profile:
 
-- `chatgpt.com`, `claude.ai`, `gemini.google.com`, `copilot.microsoft.com`, and `cursor.com` -> `AI`
-- `anime1.me` and its subdomains -> `Anime1` using a non-Japanese node
+- `chatgpt.com`, `claude.ai`, `claude.com`, `chat.com`, `gemini.google.com`, `copilot.microsoft.com`, `cursor.com`, and `grok.x.com` -> `AI`
+- `deepseek.com` -> `Domestic`
+- `anime1.me`, `hanime1.me`, and their subdomains -> `Anime1` using a non-Japanese node
 - `apple.com.cn` -> `Apple CN`
 - `icloud.com` -> `Apple`
 - `microsoft.com` -> `Microsoft`
@@ -225,7 +226,7 @@ Additional manual checks:
 - `github.com` and `gitlab.com` -> `GitHub`
 - geolocation non-China domains -> `NonChina`
 - domains from MetaCubeX `category-ads-all` -> `AdBlock`
-- AI and other global DNS leak tests should not show the local ISP DNS; private, China, Apple CN, and general Microsoft/OneDrive domains may resolve through AliDNS or DNSPod DoH
+- AI and other global DNS leak tests should not show the local ISP DNS; private, China, Apple CN, mainland China AI, and general Microsoft/OneDrive domains may resolve through AliDNS or DNSPod DoH
 
 ## Rule Order
 
